@@ -1,0 +1,39 @@
+version: "3.3"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agri-ai-web
+    env_file:
+      - .env
+    environment:
+      FLASK_APP: ${FLASK_APP}     # deve ser app:create_app
+      FLASK_ENV: ${FLASK_ENV}
+      ORACLE_HOST: ${ORACLE_HOST}
+      ORACLE_PORT: ${ORACLE_PORT}
+      ORACLE_SERVICE: ${ORACLE_SERVICE}
+      ORACLE_USER: ${ORACLE_USER}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD}
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app:/code/app:rw        # <<<<<< aqui muda
+    depends_on:
+      - db
+
+  db:
+    image: gvenzl/oracle-xe:21.3.0
+    container_name: agri-oracle
+    environment:
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD}
+      APP_USER: ${ORACLE_USER}
+      APP_USER_PASSWORD: ${ORACLE_PASSWORD}
+      ORACLE_CHARACTERSET: AL32UTF8
+    ports:
+      - "1521:1521"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+
+volumes:
+  oracle-data:
