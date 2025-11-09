@@ -8,7 +8,7 @@ services:
     env_file:
       - .env
     environment:
-      FLASK_APP: ${FLASK_APP}     # deve ser app:create_app
+      FLASK_APP: ${FLASK_APP}
       FLASK_ENV: ${FLASK_ENV}
       ORACLE_HOST: ${ORACLE_HOST}
       ORACLE_PORT: ${ORACLE_PORT}
@@ -18,7 +18,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./app:/code/app:rw        # <<<<<< aqui muda
+      - ./app:/code/app:rw
     depends_on:
       - db
 
