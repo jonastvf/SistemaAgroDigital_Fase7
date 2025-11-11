@@ -106,6 +106,87 @@ SELECT 'laranja', p.ID, f.ID, 2
 COMMIT;
 
 ```
+---
+
+## 🧩 Regras de Negócio e Relacionamentos do Modelo
+
+### 1. TABELA FORMAT_TYPE
+
+- Define os formatos geométricos possíveis para o cálculo da área de plantio (ex.: retângulo, triângulo).
+
+- Cada formato é identificado unicamente por CODE.
+
+### Regras:
+
+- Um formato pode estar associado a várias culturas.
+➜ Relação 1:N entre FORMAT_TYPE e CULTURE.
+
+- Uma cultura pode ter apenas um formato.
+
+---
+
+### 2. TABELA PRODUCT
+
+Representa o produto químico (fertilizante, herbicida etc.) utilizado em determinada cultura.
+
+A coluna DOSAGE_PER_M2 define a quantidade aplicada por metro quadrado.
+
+### Regras:
+
+- Um produto pode ser usado por múltiplas culturas diferentes.
+➜ Relação 1:N entre PRODUCT e CULTURE.
+
+- Cada cultura está vinculada a apenas um produto.
+
+---
+
+### 3. TABELA CULTURE
+
+- Define as culturas agrícolas (ex.: milho, laranja).
+
+- Cada registro associa uma cultura a um produto e a um formato.
+
+### Regras:
+
+- Cada cultura possui:
+
+- Um único produto (PRODUCT_ID → PRODUCT.ID);
+  - Um único formato geométrico (FORMAT_ID → FORMAT_TYPE.ID);
+  - Um valor de largura de rua (STREET_SIZE_M) que influencia o cálculo da área útil.
+  - Uma mesma cultura não pode se repetir (coluna NAME é única).
+  - As exclusões em cascata devem ser evitadas — recomenda-se controle lógico de deleção (ex.: flag “ativo”).
+
+---
+
+### 4. TABELA SYSTEM_PARAM
+
+- Armazena parâmetros globais do sistema, como o espaçamento padrão entre ruas.
+
+## 🔗 Resumo dos Relacionamentos
+| Entidade Origem | Tipo de Relação | Entidade Destino | Cardinalidade | Regra |
+|------------------|-----------------|------------------|----------------|-------|
+| FORMAT_TYPE | 1 → N | CULTURE | Um formato pode ser usado por várias culturas | FK: `CULTURE.FORMAT_ID` |
+| PRODUCT | 1 → N | CULTURE | Um produto pode ser usado em várias culturas | FK: `CULTURE.PRODUCT_ID` |
+| SYSTEM_PARAM | Isolada | — | Tabela de parâmetros globais | Chave primária `KEY` |
+
+### Regras:
+
+- Cada parâmetro é identificado unicamente pela coluna KEY.
+
+- Pode armazenar valores numéricos (VALUE_NUM) e textuais (VALUE_STR).
+
+- Exemplo inicial:
+('SPACE_BETWEEN_STREETS_M', 1) define 1 metro entre ruas como padrão global.
+
+## 🧠 Exemplos de cenário prático
+
+- “Milho” utiliza o formato retângulo e o produto Fosfato Monoamônico.
+
+- “Laranja” utiliza o formato triângulo e o produto Diclorofenoxiacético.
+
+- Ambos podem coexistir, e no futuro novas culturas podem ser inseridas sem alterar o código, apenas adicionando novos registros.
+
+---
 
 ## 📁 Estrutura de pastas
 
