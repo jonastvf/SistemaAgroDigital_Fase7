@@ -16,7 +16,7 @@
                 <select name="culture" id="culture" required>
                     <option value="">-- Selecione --</option>
                     {% for culture in cultures %}
-                        <option value="{{ culture }}">{{ culture | capitalize }}</option>
+                        <option value="{{ culture.id }}">{{ culture.name | capitalize }}</option>
                     {% endfor %}
                 </select>
             </label>
@@ -34,39 +34,114 @@
     </form>
 </div>
 
+<!-- card: lista de cálculos já realizados -->
+<div class="card" style="margin-top: 1rem;">
+  <header class="sub-header">
+    <h3>Áreas calculadas</h3>
+  </header>
+
+  {% if calcs and calcs|length > 0 %}
+    <div class="table-wrapper" style="overflow:auto;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Cultura</th>
+            <th>Produto</th>
+            <th>Área total (m²)</th>
+            <th>Área de plantio (m²)</th>
+            <th>Qtd. ruas</th>
+            <th>Qtd. produto</th>
+            <th>Criado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for calc in calcs %}
+            {% set d = (calc.created_at|string)[:10] %}
+            {% set t = (calc.created_at|string)[11:16] %}
+            <tr>
+              <td>{{ calc.culture_name|capitalize }}</td>
+              <td>{{ calc.product_name }}</td>
+              <td>{{ '%.2f'|format((calc.total_area_m2 or 0)|float) }}</td>
+              <td>{{ '%.2f'|format((calc.planting_area_m2 or 0)|float) }}</td>
+              <td>{{ calc.number_of_streets }}</td>
+              <td>{{ '%.4f'|format((calc.product_qty or 0)|float) }}</td>
+              <td>{{ d[8:10] }}/{{ d[5:7] }}/{{ d[0:4] }} {{ t }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p style="margin: .5rem 0 0;">Nenhum cálculo registrado ainda.</p>
+  {% endif %}
+</div>
+
+
 <script>
-    const form = document.getElementById('calc-area-form')
-    form.addEventListener('submit', function(event) {
-        event.preventDefault()
-        const data = Object.fromEntries(new FormData(this))
+const form = document.getElementById('calc-area-form')
+form.addEventListener('submit', function(event) {
+    event.preventDefault()
+    let data = Object.fromEntries(new FormData(this))
 
-        if(!data.culture) {
-            alert('Selecione uma cultura')
-            return
-        }
+    data = {
+        'culture': parseInt(data.culture),
+        'area': parseFloat(data.area)
+    }
 
-        if (isNaN( data.area) || data.area <= 0) {
-            alert("Informe uma area válida")
-            return
-        }
+    if(!data.culture) {
+        alert('Selecione uma cultura')
+        return
+    }
 
-        fetch('/api/calc-area', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        } ).then( response => {
-            if(!response.ok) throw new Error('Erro na requisição')
-            return response.json()
-        }).then(data => {
-            console.log(data)
-        }).catch(error => {
-            console.log(error)
-        })
+    if (isNaN(data.area) || data.area <= 0) {
+        alert("Informe uma área válida")
+        return
+    }
 
-
+    fetch('/api/calc-area', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
     })
+    .then(response => {
+        if (!response.ok) throw new Error('Erro na requisição')
+        return response.json()
+    })
+    .then(data => {
+        // Procura a tabela
+        const tableBody = document.querySelector('.table tbody')
+        if (!tableBody) return console.warn('Tabela não encontrada.')
+
+        // Extrai data e hora
+        const created = data.created_at ? new Date(data.created_at) : new Date()
+        const d = created.toISOString().slice(0, 10)
+        const t = created.toISOString().slice(11, 16)
+        const dataFormatada = `${d.slice(8,10)}/${d.slice(5,7)}/${d.slice(0,4)} ${t}`
+
+        // Cria nova linha
+        const row = document.createElement('tr')
+        row.innerHTML = `
+            <td>${data.culture_name || '-'}</td>
+            <td>${data.product_name || '-'}</td>
+            <td>${Number(data.total_area_m2).toFixed(2)}</td>
+            <td>${Number(data.planting_area_m2).toFixed(2)}</td>
+            <td>${data.number_of_streets || 0}</td>
+            <td>${Number(data.product_qty).toFixed(4)}</td>
+            <td>${dataFormatada}</td>
+        `
+        // Adiciona no topo
+        tableBody.prepend(row)
+        alert('Cálculo registrado com sucesso!')
+        form.reset()
+    })
+    .catch(error => {
+        console.error(error)
+        alert('Erro ao registrar cálculo.')
+    })
+})
 </script>
+
 
 {% endblock %}
