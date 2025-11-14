@@ -10,7 +10,7 @@ from app.db.models.culture_model import Culture
 from app.db.models.product_model import Product
 from app.db.models.format_type_model import FormatType
 from app.db.models.system_param_model import SystemParam
-from app.db.models.planting_calculation_model import PlantingCalculation
+from app.db.models.planting_calculation_model import PlantingCalculation as PC
 
 
 class PlantingService:
@@ -103,7 +103,7 @@ class PlantingService:
         product_qty = (dosage_per_m2 * planting_area).quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
 
         # Persiste em planting_calculation
-        new_row = PlantingCalculation(
+        new_row = PC(
             culture_id=row.id,
             product_id=row.product_id,
             total_area_m2=planting_area + (number_of_streets * street_size),  # opcional: guardar exatamente total_area recebido
@@ -185,3 +185,58 @@ class PlantingService:
 
         else:
             raise ValueError(f"Figura desconhecida: {figure}")
+
+    @staticmethod
+    def get_calcs(
+            session: Session,
+            limit: int | None = None,
+            offset: int = 0,
+    ) -> List[Dict[str, Any]]:
+        """
+        Lista registros de planting_calculation, juntando nomes de cultura e produto.
+        Ordena por created_at desc. Suporta paginação via limit/offset.
+        """
+        stmt = (
+            select(
+                PC.id,
+                PC.created_at,
+                PC.total_area_m2,
+                PC.planting_area_m2,
+                PC.number_of_streets,
+                PC.product_qty,
+                PC.input_params,
+                Culture.id.label("culture_id"),
+                Culture.name.label("culture_name"),
+                Product.id.label("product_id"),
+                Product.name.label("product_name"),
+            )
+            .join(Culture, Culture.id == PC.culture_id)
+            .join(Product, Product.id == PC.product_id)
+            .order_by(PC.created_at.desc(), PC.id.desc())
+        )
+
+        if limit is not None:
+            stmt = stmt.limit(limit).offset(offset)
+
+        rows = session.execute(stmt).all()
+
+        def _s(v):
+            # normaliza Decimals/None para string quando numérico
+            return str(v) if v is not None else None
+
+        return [
+            {
+                "id": r.id,
+                "created_at": str(r.created_at),
+                "culture_id": r.culture_id,
+                "culture_name": r.culture_name,
+                "product_id": r.product_id,
+                "product_name": r.product_name,
+                "total_area_m2": _s(r.total_area_m2),
+                "planting_area_m2": _s(r.planting_area_m2),
+                "number_of_streets": r.number_of_streets,
+                "product_qty": _s(r.product_qty),
+                "input_params": r.input_params,
+            }
+            for r in rows
+        ]

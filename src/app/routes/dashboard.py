@@ -1,8 +1,8 @@
-from os import getenv
-
 from flask import Blueprint, render_template
+from app.controller.planting_calc_area_controller import PlantingCalcAreaController
 
 dashboard_bp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
+CONTROLLER = PlantingCalcAreaController()
 
 @dashboard_bp.route('/')
 def index():
@@ -14,20 +14,15 @@ def index():
 
 @dashboard_bp.route('/fase-1')
 def phase_one():
-    cultures = ['milho', 'laranja']
-    products = {'milho': 'Fosfato Monoamônico', 'laranja': 'Diclorofenoxiacético'}
-    productsQtd = {'Fosfato Monoamônico': 5, 'Diclorofenoxiacético': 0.15}
-    formats = {'milho': 'retangulo', 'laranja': 'triangulo'}
-    streets = {'milho': 1, 'laranja': 2}
-    spaceBetweenStreets = 1
+    cultures = CONTROLLER.get_cultures()
+    calcs = CONTROLLER.get_calcs()
+
+    print(calcs)
+
 
     return render_template(
         "pages/calc-area.html",
         sub_title="Cálculo de area de plantio",
         cultures=cultures,
-        products=products,
-        productsQtd=productsQtd,
-        formats=formats,
-        streets=streets,
-        spaceBetweenStreets=spaceBetweenStreets,
+        calcs=calcs
     )
