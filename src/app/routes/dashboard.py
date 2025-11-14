@@ -16,13 +16,13 @@ def index():
 def phase_one():
     cultures = CONTROLLER.get_cultures()
     calcs = CONTROLLER.get_calcs()
-
-    print(calcs)
-
-
+    formats = CONTROLLER.get_formats()
+    products = CONTROLLER.get_products()
     return render_template(
         "pages/calc-area.html",
         sub_title="Cálculo de area de plantio",
         cultures=cultures,
-        calcs=calcs
+        calcs=calcs,
+        formats=formats,
+        products=products
     )

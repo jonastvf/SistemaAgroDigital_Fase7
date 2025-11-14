@@ -21,6 +21,10 @@ html, body{
     font-family: 'Open Sans', sans-serif;
 }
 
+a {
+    text-decoration: none;
+}
+
 .container-flex {
     display: flex;
     width: 100%;
@@ -64,8 +68,12 @@ main {
     background-color: var(--background);
 }
 
-header {
+header a {
+    color: white
+}
 
+header a:hover {
+    color: var(--acent)
 }
 
 footer {
@@ -76,7 +84,7 @@ footer {
     justify-content: center;
 }
 
-button {
+button, .button {
     border: none;
     outline: none;
     height: 100%;
@@ -96,11 +104,12 @@ button {
 }
 
 .card {
-    margin: 8px;
+    margin: 8px 8px 24px 8px;
     padding: 12px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: white;
+    position: relative;
 }
 
 .form-container {
@@ -134,4 +143,16 @@ button {
 form > button {
     margin: 24px 0;
     background-color: var(--acent);
+}
+
+.d-none {
+    display: none;
+}
+
+.close-container {
+    position: absolute;
+    right: 25px;
+    top: 25px;
+    cursor: pointer;
+    font-weight: bold;
 }

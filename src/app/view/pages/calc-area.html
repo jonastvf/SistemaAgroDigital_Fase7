@@ -8,6 +8,54 @@
     <h2>Cálculo para área de plantio</h2>
 </header>
 
+<div class="card d-none" id="new-culture-container">
+    <span class="close-container" id="close-container">x</span>
+    <h3>Cadastro de nova cultura</h3>
+    <form id="new-culture-form">
+        <div class="form-container">
+            <label for="culture-name">
+                <span>Nome</span>
+                <input type="text" name="culture_name" id="culture-name" required>
+            </label>
+        </div>
+
+        <div class="form-container">
+            <label for="culture-format">
+                <span>Formato</span>
+                <select name="culture-format" id="culture-format" required>
+                    <option value="">-- Selecione --</option>
+                    {% for format in formats %}
+                        <option value="{{format.id}}">{{format.code}}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+
+        <div class="form-container">
+            <label for="culture-product">
+                <span>Produto</span>
+                <select name="culture-format" id="culture-product" required>
+                    <option value="">-- Selecione --</option>
+                    {% for product in products %}
+                        <option value="{{product.id}}">{{product.name}}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+
+        <div class="form-container">
+            <label for="culture-street-size">
+                <span>Largura da rua em m2</span>
+                <input type="number" name="street_size_m" id="culture-street-size" required>
+            </label>
+        </div>
+
+        <div class="form-container">
+            <button>Cadastrar cultura</button>
+        </div>
+    </form>
+</div>
+
 <div class="card">
     <form id="calc-area-form" action="{{ endpoint }}">
         <div class="form-container">
@@ -78,6 +126,39 @@
 
 
 <script>
+let newCultureVisibility = false
+const newCultureButton = document.getElementById('register-culture')
+const newCultureContainer = document.getElementById('new-culture-container')
+const closeContainer = document.getElementById('close-container')
+const newCultureForm = document.getElementById('new-culture-form')
+
+newCultureForm.addEventListener('submit', event => {
+    event.preventDefault()
+    event.stopImmediatePropagation()
+
+    let data = Object.fromEntries(new FormData(this))
+})
+
+const toggleNewCultureForm = () => {
+    if ( newCultureVisibility ) {
+        newCultureContainer.classList.remove('d-none')
+        return null
+    }
+
+    newCultureContainer.classList.add('d-none')
+}
+
+newCultureButton.addEventListener('click', event => {
+    event.preventDefault()
+    newCultureVisibility = true
+    toggleNewCultureForm()
+})
+
+closeContainer.addEventListener('click', event => {
+    newCultureVisibility = false
+    toggleNewCultureForm()
+})
+
 const form = document.getElementById('calc-area-form')
 form.addEventListener('submit', function(event) {
     event.preventDefault()

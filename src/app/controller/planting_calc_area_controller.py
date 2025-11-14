@@ -15,3 +15,9 @@ class PlantingCalcAreaController:
 
     def get_calcs(self):
         return PlantingService.get_calcs(self.session_local())
+
+    def get_formats(self):
+        return PlantingService.get_format_types(self.session_local())
+
+    def get_products(self):
+        return PlantingService.get_products(self.session_local())

@@ -16,9 +16,34 @@ from app.db.models.planting_calculation_model import PlantingCalculation as PC
 class PlantingService:
     SPACE_BETWEEN_STREETS_KEY = "SPACE_BETWEEN_STREETS_M"
 
-    # -------------------------
-    # 1) Listar culturas (JOIN)
-    # -------------------------
+    @staticmethod
+    def get_format_types(session: Session) -> List[Dict[str, Any]]:
+        stmt = select(FormatType.id, FormatType.code, FormatType.description).order_by(FormatType.code.asc())
+        rows = session.execute(stmt).all()
+
+        return [
+            {
+                "id": row.id,
+                "code": row.code,
+                "description": row.description,
+            }
+            for row in rows
+        ]
+
+    @staticmethod
+    def get_products(session: Session) -> List[Dict[str, Any]]:
+        stmt = select(Product.id, Product.name, Product.dosage_per_m2).order_by(Product.name.asc())
+        rows = session.execute(stmt).all()
+
+        return [
+            {
+                "id": row.id,
+                "name": row.name,
+                "dosage_per_m2": row.dosage_per_m2
+            }
+            for row in rows
+        ]
+
     @staticmethod
     def get_cultures(session: Session) -> List[Dict[str, Any]]:
         stmt = (
@@ -45,9 +70,6 @@ class PlantingService:
             for r in rows
         ]
 
-    # --------------------------------------------------------------------
-    # 2) Calcular área de plantio e registrar em planting_calculation (INSERT)
-    # --------------------------------------------------------------------
     @staticmethod
     def calc_and_register(
         session: Session,
