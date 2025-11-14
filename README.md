@@ -26,7 +26,66 @@
 
 ## 📜 Descrição
 
-*Descreva seu projeto com base no texto do PBL (até 600 palavras)*
+### 🏗️ Arquitetura e Estrutura do Projeto
+
+Para atender ao objetivo de consolidar todas as funcionalidades desenvolvidas ao longo das Fases 1 a 6 em um único sistema integrado, optamos por construir uma aplicação web completa, com um painel de navegação onde o usuário pode acessar cada uma das funções implementadas nos meses anteriores — como cálculo de área, consultas de sensores IoT, análises preditivas, visão computacional e integração com AWS.
+
+### 🔧 Tecnologias e Estratégia de Implementação
+
+A infraestrutura do sistema foi construída utilizando Docker, de forma que todo o ambiente (backend, banco de dados e dependências) pudesse ser executado com apenas um comando, garantindo:
+
+- Reprodutibilidade
+
+- Facilidade de instalação
+
+- Padronização entre ambientes
+
+- Isolamento das dependências
+
+Dentro do ambiente Docker, utilizamos:
+
+<b>🐍 Backend — Python + Flask</b>
+
+O backend foi desenvolvido em Python, utilizando o microframework Flask, por sua leveza, simplicidade e excelente integração com APIs, dashboards e serviços externos (IoT, R, YOLO, AWS etc.).
+O Flask também permite estruturar o projeto em blueprints e trabalhar com HTML (Jinja2), REST APIs, autenticação e dashboards em uma mesma aplicação.
+
+<b>🗄️ Banco de Dados — MySQL</b>
+
+Inicialmente, o plano era utilizar Oracle Database XE, porém durante os testes o Oracle apresentou:
+
+- dificuldades na configuração de usuários e permissões,
+
+- lentidão no processo de inicialização,
+
+- necessidade de scripts adicionais para habilitar criação de schemas,
+
+- baixa compatibilidade com ferramentas como PyCharm e SQLAlchemy.
+
+Por esse motivo, migramos para o MySQL, que ofereceu:
+
+- configuração extremamente simples no Docker,
+
+- integração perfeita com o SQLAlchemy,
+
+- criação rápida das tabelas de forma automática,
+
+- codificação UTF-8 já habilitada,
+
+- maior velocidade e praticidade para desenvolvimento acadêmico.
+
+Mesmo com a troca do banco, mantivemos os princípios de modelagem relacional definidos na Fase 2, adaptando apenas os tipos e restrições das tabelas.
+
+### 📁 Estrutura Integrada
+
+O resultado é um sistema completo onde:
+
+- o Flask gerencia as rotas e páginas do painel,
+
+- o MySQL armazena todos os dados de culturas, produtos, sensores e cálculos,
+
+- o Docker Compose orquestra os serviços com um único comando,
+
+- e cada módulo desenvolvido nas fases anteriores pode ser executado diretamente pelo usuário através do painel unificado.
 
 ## Melhorias da FASE 1
 
@@ -34,6 +93,8 @@ O sistema de cálculo para área plantada sofreu significativas alterações em 
 A principal mudança foi que os arrays e *dicts* estáticos dentro do código passam a ser tabelas SQL, permitindo assim que o sistema se torne dinâmico, com a possibilidade de o usuário cadastrar novas culturas.
 
 As tabelas são criadas e populadas na primeira inicialização do Docker (`docker-compose up --build`) em ordem crescente de cada prefixo dos arquivos `.sql` em `src/app/db/migrations`.
+
+O Painel está acessível através do navegador, onde 
 
 ---
 
@@ -187,7 +248,13 @@ Dentre os arquivos e pastas presentes na raiz do projeto, definem-se:
 
 ## 🔧 Como executar o código
 
-*Acrescentar as informações necessárias sobre pré-requisitos (IDEs, serviços, bibliotecas etc.) e instalação básica do projeto, descrevendo eventuais versões utilizadas. Colocar um passo a passo de como o leitor pode baixar o seu código e executá-lo a partir de sua máquina ou seu repositório. Considere a explicação organizada em fase.*
+No terminal digite os seguintes comandos
+```bash
+cd src
+docker-compose up --build
+```
+O docker irá montar as imagens do sistema junto das tabelas do MySql que substituem os arrays do código.
+O sistema estará acessível pela URL: http://localhost:5000/dashboard
 
 
 ## 🗃 Histórico de lançamentos
