@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Previsão do Tempo – Agro Digital{% endblock %}
+
+{% block content %}
+
+<header class="sub-header center">
+    <h2>Previsão do Tempo</h2>
+</header>
+
+<div class="weather-card">
+    <form id="weather-form">
+        <label>
+            <span>Digite o nome da cidade</span>
+            <input type="text" id="city" name="city" placeholder="Ex: São Paulo" required>
+        </label>
+
+        <button type="submit">Consultar</button>
+    </form>
+</div>
+
+<div id="weather-result" class="weather-result hidden">
+    <h3>Resultado</h3>
+
+    <table class="weather-table">
+        <tbody id="weather-data">
+            <!-- JS preenche -->
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .weather-card {
+        max-width: 500px;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin: 0 auto 30px auto;
+    }
+
+    #weather-form label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    #weather-form input {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 6px;
+        border: 1px solid #bbb;
+    }
+
+    #weather-form button {
+        margin-top: 12px;
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: 0.2s;
+    }
+
+    #weather-form button:hover {
+        background: #2980b9;
+    }
+
+    .weather-result {
+        max-width: 500px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin: 0 auto;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .weather-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .weather-table td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .weather-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .weather-table td:first-child {
+        font-weight: bold;
+        width: 40%;
+        color: #555;
+    }
+</style>
+
+<script>
+    const form = document.getElementById("weather-form");
+    const resultBox = document.getElementById("weather-result");
+    const tbody = document.getElementById("weather-data");
+
+    form.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const city = document.getElementById("city").value.trim();
+        if (!city) {
+            alert("Por favor, digite uma cidade.");
+            return;
+        }
+
+        fetch(`/api/weather?city=${encodeURIComponent(city)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Erro na consulta");
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === "error") {
+                    alert(data.detail);
+                    return;
+                }
+
+                const w = data.data;
+
+                tbody.innerHTML = `
+                    <tr><td>Cidade</td><td>${w.city}, ${w.country}</td></tr>
+                    <tr><td>Temperatura</td><td>${w.temperature}°C</td></tr>
+                    <tr><td>Umidade</td><td>${w.humidity}%</td></tr>
+                    <tr><td>Pressão</td><td>${w.pressure} hPa</td></tr>
+                    <tr><td>Vento</td><td>${w.wind_speed} m/s</td></tr>
+                    <tr><td>Latitude</td><td>${w.lat}</td></tr>
+                    <tr><td>Longitude</td><td>${w.lon}</td></tr>
+                    <tr><td>Descrição</td><td>${w.description}</td></tr>
+                `;
+
+                resultBox.classList.remove("hidden");
+            })
+            .catch(err => {
+                alert("Erro ao consultar clima.");
+                console.error(err);
+            });
+    });
+</script>
+
+{% endblock %}
