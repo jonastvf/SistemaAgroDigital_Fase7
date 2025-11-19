@@ -1,5 +1,8 @@
 from __future__ import annotations
+
+import csv
 from decimal import Decimal, ROUND_HALF_UP
+from pathlib import Path
 from typing import Any, List, Dict
 
 from sqlalchemy import select
@@ -104,17 +107,15 @@ class PlantingService:
         if not row:
             raise ValueError("Cultura não encontrada.")
 
-        # Pega parâmetro global SPACE_BETWEEN_STREETS_M
         space_between = session.get(SystemParam, PlantingService.SPACE_BETWEEN_STREETS_KEY)
         if not space_between or space_between.value_num is None:
             raise ValueError("Parâmetro global 'SPACE_BETWEEN_STREETS_M' não configurado.")
 
         street_size = Decimal(str(row.street_size_m))
         space_between_streets = Decimal(str(space_between.value_num))
-        format_code = row.format_code  # 'retangulo' | 'triangulo'
+        format_code = row.format_code
         dosage_per_m2 = Decimal(str(row.dosage_per_m2))
 
-        # --- Cálculo da área disponível, replicando a sua lógica do script ---
         planting_area, number_of_streets = PlantingService._calc_area_available(
             total_area,
             format_code,
@@ -122,10 +123,8 @@ class PlantingService:
             space_between_streets,
         )
 
-        # Quantidade de produto
         product_qty = (dosage_per_m2 * planting_area).quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
 
-        # Persiste em planting_calculation
         new_row = PC(
             culture_id=row.id,
             product_id=row.product_id,
@@ -189,18 +188,17 @@ class PlantingService:
             streets_qtd = int(floor(area / total_street_size))
             area_occupied = Decimal(streets_qtd) * street_size
             planting_area = area - area_occupied
-            return (planting_area, streets_qtd)
+            return planting_area, streets_qtd
 
         elif figure == "triangulo":
-            # espelha a matemática do script original
             base = Decimal(str(sqrt(2 * float(area))))
             height = base / Decimal("2")
             total_area = (base * height) / Decimal("2")
             total_street_size = street_size + space_between_streets
             streets_qtd = int(floor(float(height / total_street_size)))
-            # Nota: fórmula do script tem dimensões peculiares; replicamos:
+
             area_available = total_area - (Decimal(streets_qtd) * street_size * base / total_area)
-            return (area_available, streets_qtd)
+            return area_available, streets_qtd
 
         else:
             raise ValueError(f"Figura desconhecida: {figure}")
@@ -278,7 +276,7 @@ class PlantingService:
                 "id": new_culture.id,
                 "name": new_culture.name,
                 "product_id": new_culture.product_id,
-                "format_id": format_id,
+                "format_id": new_culture.format_id,
                 'status': 'success'
             }
         except Exception as e:
@@ -301,10 +299,13 @@ class PlantingService:
         )
         rows = session.execute(stmt).all()
 
+        csv_path = Path(csv_path)
+        csv_path.parent.mkdir(parents=True, exist_ok=True)
+
         with csv_path.open('w', newline="", encoding="utf-8") as f:
-            writer = csv.DictWiter(
+            writer = csv.DictWriter(
                 f,
-                fieldnames=['culture', 'plantingArea', 'productQtd']
+                fieldnames=['culture', 'totalArea', 'plantingArea', 'productQtd']
             )
             writer.writeheader()
             for r in rows:

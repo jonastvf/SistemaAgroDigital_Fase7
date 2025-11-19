@@ -87,7 +87,7 @@ O resultado é um sistema completo onde:
 
 - e cada módulo desenvolvido nas fases anteriores pode ser executado diretamente pelo usuário através do painel unificado.
 
-## Melhorias da FASE 1
+# FASE 1
 
 O sistema de cálculo para área plantada sofreu significativas alterações em decorrência do conhecimento adquirido de banco de dados nas fases posteriores.  
 A principal mudança foi que os arrays e *dicts* estáticos dentro do código passam a ser tabelas SQL, permitindo assim que o sistema se torne dinâmico, com a possibilidade de o usuário cadastrar novas culturas.
@@ -225,6 +225,113 @@ A coluna DOSAGE_PER_M2 define a quantidade aplicada por metro quadrado.
 - “Laranja” utiliza o formato triângulo e o produto Diclorofenoxiacético.
 
 - Ambos podem coexistir, e no futuro novas culturas podem ser inseridas sem alterar o código, apenas adicionando novos registros.
+
+---
+
+# FASE 2
+
+## 🎯 Objetivo
+
+Desenvolver um **Modelo Entidade-Relacionamento (MER)** e um **Diagrama Entidade-Relacionamento (DER)** que representem um sistema capaz de armazenar e processar dados de sensores utilizados em plantações, otimizando o uso de recursos como água e nutrientes.
+
+## 🧠 Contexto do Problema
+
+O produtor rural utiliza três tipos de sensores:
+
+- **S1**: Sensor de Umidade
+- **S2**: Sensor de pH
+- **S3**: Sensor de Nutrientes (Fósforo e Potássio - NPK)
+
+Esses sensores coletam dados em tempo real, enviando-os para um sistema central que:
+- Processa os dados,
+- Sugere ajustes na irrigação e aplicação de nutrientes,
+- Utiliza dados históricos para prever necessidades futuras.
+
+---
+
+## 📝 Requisitos da Modelagem
+
+### 1. Informações Relevantes
+Abaixo, listamos algumas informações que o sistema deve permitir consultar:
+
+- Quantidade total de água aplicada por mês
+  - Dados: `data_hora`, `quantidade_agua`
+- Variação do pH ao longo do ano
+  - Dados: `data_hora`, `valor_ph`
+- Níveis de fósforo e potássio ao longo do tempo
+  - Dados: `data_hora`, `valor_fosforo`, `valor_potassio`
+
+---
+
+### 2. Entidades e Atributos (MER)
+
+#### 🌾 Cultivo
+- `id_cultivo` (PK)
+- `nome_cultura` (varchar)
+- `localizacao` (varchar)
+
+#### 🌡️ Sensor
+- `id_sensor` (PK)
+- `tipo_sensor` (varchar) — ex: Umidade, pH, Nutriente
+- `descricao` (varchar)
+
+#### 📊 Leitura
+- `id_leitura` (PK)
+- `id_sensor` (FK)
+- `id_cultivo` (FK)
+- `data_hora` (datetime)
+- `valor_umidade` (double)
+- `valor_ph` (double)
+- `valor_fosforo` (double)
+- `valor_potassio` (double)
+
+#### 💧 Irrigacao
+- `id_irrigacao` (PK)
+- `id_cultivo` (FK)
+- `data_hora` (datetime)
+- `quantidade_agua` (double)
+
+---
+
+### 3. Cardinalidades
+
+- Um **Cultivo** pode estar relacionado a **muitas Leituras** (1:N)
+- Um **Sensor** pode gerar **muitas Leituras** (1:N)
+- Um **Cultivo** pode ter **muitas Irrigações** (1:N)
+
+---
+
+### 4. Relacionamentos
+
+- `Cultivo (1) --- (N) Leitura`
+- `Sensor (1) --- (N) Leitura`
+- `Cultivo (1) --- (N) Irrigacao`
+
+---
+
+### 5. Tipos de Dados
+
+| Atributo             | Tipo de Dado |
+|----------------------|--------------|
+| id_cultivo           | int (PK)     |
+| nome_cultura         | varchar(100) |
+| localizacao          | varchar(100) |
+| id_sensor            | int (PK)     |
+| tipo_sensor          | varchar(50)  |
+| descricao            | varchar(255) |
+| id_leitura           | int (PK)     |
+| data_hora            | datetime     |
+| valor_umidade        | double       |
+| valor_ph             | double       |
+| valor_fosforo        | double       |
+| valor_potassio       | double       |
+| id_irrigacao         | int (PK)     |
+| quantidade_agua      | double       |
+
+---
+
+### Os arquivos gerados no Oracle Data Modeler estão disponíveis em: 
+[📁 Modelagem Lógica do Banco de Dados](src/Modelagem%20Lógica%20do%20Banco%20de%20dados)
 
 ---
 

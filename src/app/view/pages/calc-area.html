@@ -8,6 +8,44 @@
     <h2>Cálculo para área de plantio</h2>
 </header>
 
+<!-- lista de cálculos já realizados -->
+<div class="card" style="margin-top: 1rem;">
+  <header class="sub-header">
+    <h3>Áreas calculadas</h3>
+  </header>
+
+    <div class="table-wrapper" style="overflow:auto;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Cultura</th>
+            <th>Produto</th>
+            <th>Área total (m²)</th>
+            <th>Área de plantio (m²)</th>
+            <th>Qtd. ruas</th>
+            <th>Qtd. produto</th>
+            <th>Criado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for calc in calcs %}
+            {% set d = (calc.created_at|string)[:10] %}
+            {% set t = (calc.created_at|string)[11:16] %}
+            <tr>
+              <td>{{ calc.culture_name|capitalize }}</td>
+              <td>{{ calc.product_name }}</td>
+              <td>{{ '%.2f'|format((calc.total_area_m2 or 0)|float) }}</td>
+              <td>{{ '%.2f'|format((calc.planting_area_m2 or 0)|float) }}</td>
+              <td>{{ calc.number_of_streets }}</td>
+              <td>{{ '%.4f'|format((calc.product_qty or 0)|float) }}</td>
+              <td>{{ d[8:10] }}/{{ d[5:7] }}/{{ d[0:4] }} {{ t }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+</div>
+
 <div class="card d-none" id="new-culture-container">
     <span class="close-container" id="close-container">x</span>
     <h3>Cadastro de nova cultura</h3>
@@ -80,44 +118,6 @@
 
         <button>Calcular</button>
     </form>
-</div>
-
-<!-- card: lista de cálculos já realizados -->
-<div class="card" style="margin-top: 1rem;">
-  <header class="sub-header">
-    <h3>Áreas calculadas</h3>
-  </header>
-
-    <div class="table-wrapper" style="overflow:auto;">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Cultura</th>
-            <th>Produto</th>
-            <th>Área total (m²)</th>
-            <th>Área de plantio (m²)</th>
-            <th>Qtd. ruas</th>
-            <th>Qtd. produto</th>
-            <th>Criado</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for calc in calcs %}
-            {% set d = (calc.created_at|string)[:10] %}
-            {% set t = (calc.created_at|string)[11:16] %}
-            <tr>
-              <td>{{ calc.culture_name|capitalize }}</td>
-              <td>{{ calc.product_name }}</td>
-              <td>{{ '%.2f'|format((calc.total_area_m2 or 0)|float) }}</td>
-              <td>{{ '%.2f'|format((calc.planting_area_m2 or 0)|float) }}</td>
-              <td>{{ calc.number_of_streets }}</td>
-              <td>{{ '%.4f'|format((calc.product_qty or 0)|float) }}</td>
-              <td>{{ d[8:10] }}/{{ d[5:7] }}/{{ d[0:4] }} {{ t }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
 </div>
 
 

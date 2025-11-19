@@ -31,7 +31,12 @@ def create_app():
                         'url': '/dashboard/fase-1/statistics',
                         'label': 'Estatísticas'
                     }
+                },
+                {
+                    'label': 'Previsão do tempo',
+                    'url': '/dashboard/fase-1/weather',
                 }
+
             ]
         }
 

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Estatísticas – Fase 1{% endblock %}
+
+{% block content %}
+<h2>Estatísticas das áreas de plantio</h2>
+
+{% if error %}
+  <p class="error">{{ error }}</p>
+{% elif not stats or not stats[0].has_data %}
+  <p>Nenhum dado disponível para cálculo de estatísticas.</p>
+{% else %}
+  <table class="table    ">
+    <thead>
+      <tr>
+        <th>Cultura</th>
+        <th>Média área total (m²)</th>
+        <th>Mediana área total (m²)</th>
+        <th>Desvio padrão área total</th>
+        <th>Média área plantada (m²)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in stats %}
+        <tr>
+          <td>{{ row.culture|capitalize }}</td>
+          <td>{{ "%.2f"|format(row.media_area_total|float) }}</td>
+          <td>{{ "%.2f"|format(row.mediana_area_total|float) }}</td>
+          <td>{{ row.desvio_padrao_area_total }}</td>
+          <td>{{ "%.2f"|format(row.media_area_plantada|float) }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+{% endblock %}

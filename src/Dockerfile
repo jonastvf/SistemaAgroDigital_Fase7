@@ -1,25 +1,26 @@
-# src/Dockerfile
 FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1
 
-# Pai do pacote
 WORKDIR /code
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc build-essential curl \
- && rm -rf /var/lib/apt/lists/*
+# Sistema + R + pacotes básicos
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        gcc \
+        build-essential \
+        curl \
+        r-base \
+    && R -e "install.packages(c('dplyr', 'jsonlite'), repos='https://cran.r-project.org')" \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get install -y r-base && \
-    R -e "install.packages('dplyr', repos='https://cran.r-project.org')"
-
-
+# Dependências Python
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install --upgrade pip && pip install -r /tmp/requirements.txt
 
-# Copia para /code/app  (agora existe o pacote "app")
+# Código da aplicação
 COPY app/ /code/app/
 
 EXPOSE 5000
