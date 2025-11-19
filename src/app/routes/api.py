@@ -7,6 +7,7 @@ from app.db.connection.sql_alchemy import SqlAlchemyBuilder
 from app.db.models.culture_model import Culture
 from app.services.planting_service import PlantingService
 from app.services.weather_service import WeatherService
+from app.services.iot_service import IotService
 
 
 api_bp = Blueprint('api', __name__, url_prefix='/api')
@@ -92,4 +93,18 @@ def get_weather():
 
     status_code = 200 if result["status"] == "success" else 400
     return jsonify(result), status_code
+
+@api_bp.route("/iot/simulate", methods=["POST"])
+def simulate_iot():
+    session = SessionLocal()
+
+    last = IotService.get_last_reading(session)
+    data = IotService.simulate_reading(previous=last)
+    saved = IotService.save_reading(session, data)
+
+    return jsonify({
+        "status": "success",
+        "data": saved.to_dict()
+    })
+
 
