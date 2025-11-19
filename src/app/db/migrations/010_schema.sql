@@ -52,3 +52,15 @@ CREATE TABLE planting_calculation (
   INDEX ix_pc_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE iot_reading (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    timestamp DATETIME NOT NULL,
+    humidity DECIMAL(5,2) NOT NULL,
+    ph DECIMAL(5,2) NOT NULL,
+    phosphorus TINYINT(1) NOT NULL,
+    potassium TINYINT(1) NOT NULL,
+    pump_on TINYINT(1) NOT NULL,
+    CONSTRAINT chk_ph CHECK (ph >= 0 AND ph <= 14),
+    CONSTRAINT chk_humidity CHECK (humidity >= 0 AND humidity <= 100)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
