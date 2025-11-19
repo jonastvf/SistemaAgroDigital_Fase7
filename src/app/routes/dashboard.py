@@ -50,3 +50,7 @@ def statistics():
         error=None,
         stats=data,
     )
+
+@dashboard_bp.route('/fase-1/weather')
+def weather():
+    return render_template('pages/weather.html', error=None,)
