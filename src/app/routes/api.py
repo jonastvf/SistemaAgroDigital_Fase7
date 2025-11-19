@@ -6,8 +6,10 @@ from sqlalchemy import select
 from app.db.connection.sql_alchemy import SqlAlchemyBuilder
 from app.db.models.culture_model import Culture
 from app.services.planting_service import PlantingService
-api_bp = Blueprint('api', __name__, url_prefix='/api')
+from app.services.weather_service import WeatherService
 
+
+api_bp = Blueprint('api', __name__, url_prefix='/api')
 SERVICE = PlantingService()
 SQL_SERVER = os.getenv('MYSQL_HOST')
 SQL_DATABASE = os.getenv('MYSQL_DATABASE')
@@ -82,4 +84,12 @@ def create_culture():
         return jsonify(response), 500
 
     return jsonify(response), 201
+
+@api_bp.route('/weather', methods=['GET'])
+def get_weather():
+    city = request.args.get("city")  # /api/weather?city=São Paulo
+    result = WeatherService.get_weather_by_city(city)
+
+    status_code = 200 if result["status"] == "success" else 400
+    return jsonify(result), status_code
 
