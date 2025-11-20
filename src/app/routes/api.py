@@ -20,47 +20,8 @@ SessionLocal = db_builder.get_session()
 
 @api_bp.route('/teste')
 def teste():
-    # lista = PlantingService.get_cultures(SessionLocal())
-    # print(lista)
+    pass
 
-    lista = PlantingService.calc_and_register(SessionLocal(), 1, 500)
-    return jsonify(lista)
-
-
-    #
-    # try:
-    #     with SessionLocal() as session:
-    #         stmt = select(Culture)
-    #         result = session.scalars(stmt).all()
-    #
-    #         if not result:
-    #             return jsonify({
-    #                 'status': 'success',
-    #                 'message': "No cultures found",
-    #             })
-    #
-    #         culture_data = [
-    #             c.to_dict() if hasattr(c, 'to_dict') else {
-    #                 "id": c.id,
-    #                 "name": c.name,
-    #                 "product_id": c.product_id,
-    #                 "format_id": c.format_id,
-    #                 "street_size_m": c.street_size_m
-    #             }
-    #             for c in result
-    #         ]
-    #
-    #         return jsonify({
-    #             "status": "success",
-    #             "message": f"{len(culture_data)} cultures found",
-    #             "data": culture_data
-    #         })
-    # except Exception as e:
-    #     return jsonify({
-    #         'status': 'error',
-    #         'message': 'Query for cultures failed',
-    #         'detail': str(e)
-    #     })
 
 @api_bp.route('/calc-area', methods=['POST'])
 def calc_area():
@@ -106,5 +67,7 @@ def simulate_iot():
         "status": "success",
         "data": saved.to_dict()
     })
+
+
 
 

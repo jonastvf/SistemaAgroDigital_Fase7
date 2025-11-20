@@ -54,3 +54,7 @@ def statistics():
 @dashboard_bp.route('/fase-1/weather')
 def weather():
     return render_template('pages/weather.html', error=None,)
+
+@dashboard_bp.route('/fase-3/iot')
+def iot():
+    return render_template('pages/iot.html', error=None)
