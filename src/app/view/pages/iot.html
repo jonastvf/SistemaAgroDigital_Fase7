@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Painel – Agro Digital{% endblock %}
+
+{% block content %}
+
+<h1>{{ title }}</h1>
+
+<div class="container-flex">
+    <button style="background-color: var(--acent)" id="btn-simulate">Gerar leitura</button>
+
+    <table id="iot-table" class="table">
+        <thead>
+            <tr>
+                <th>Data/Hora</th>
+                <th>Umidade (%)</th>
+                <th>pH</th>
+                <th>Fósforo (P)</th>
+                <th>Potássio (K)</th>
+                <th>Bomba ligada</th>
+            </tr>
+        </thead>
+        <tbody id="iot-body">
+            {# Linhas virão dinamicamente #}
+        </tbody>
+    </table>
+</div>
+
+<script>
+
+const tbody = document.getElementById("iot-body");
+
+document.getElementById("btn-simulate").onclick = () => {
+    fetch("/api/iot/simulate", { method: "POST" })
+        .then(r => r.json())
+        .then(res => {
+            if (res.status !== "success") {
+                alert("Erro ao simular leitura");
+                return;
+            }
+            addRow(res.data);
+        })
+        .catch(err => console.error(err));
+};
+
+function addRow(data) {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+        <td>${data.timestamp}</td>
+        <td>${data.humidity.toFixed(2)}</td>
+        <td>${data.ph.toFixed(2)}</td>
+        <td>${data.phosphorus ? "Sim" : "Não"}</td>
+        <td>${data.potassium ? "Sim" : "Não"}</td>
+        <td class="${data.pump_on ? "on" : "off"}">
+            ${data.pump_on ? "Ligada" : "Desligada"}
+        </td>
+    `;
+
+    tbody.prepend(tr);
+}
+</script>
+
+{% endblock %}

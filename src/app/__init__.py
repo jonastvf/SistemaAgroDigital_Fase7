@@ -35,6 +35,10 @@ def create_app():
                 {
                     'label': 'Previsão do tempo',
                     'url': '/dashboard/fase-1/weather',
+                },
+                {
+                    'label': 'IOT',
+                    'url': '/dashboard/fase-3/iot',
                 }
 
             ]
