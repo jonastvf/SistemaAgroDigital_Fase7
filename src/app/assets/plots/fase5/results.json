@@ -1,0 +1,40 @@
+{
+    "status": "success",
+    "summary": {
+        "dataset_rows": 156,
+        "best_model": "LinearRegression"
+    },
+    "metrics": {
+        "LinearRegression": {
+            "MAE": 55423.34851941909,
+            "MSE": 4162255539.8433723,
+            "RMSE": 64515.54494727121,
+            "R2": -0.07303066291166038
+        },
+        "RandomForest": {
+            "MAE": 71894.7622046751,
+            "MSE": 7286354096.401798,
+            "RMSE": 85360.14348864344,
+            "R2": -0.87842416003255
+        },
+        "KNN": {
+            "MAE": 68257.10625,
+            "MSE": 6804927187.41125,
+            "RMSE": 82491.98256443623,
+            "R2": -0.7543121658619376
+        },
+        "SVR": {
+            "MAE": 38974.585097875795,
+            "MSE": 5085640862.355417,
+            "RMSE": 71313.67934944472,
+            "R2": -0.31107966188669267
+        }
+    },
+    "charts": {
+        "distribution": "eda_distribution.png",
+        "boxplot": "eda_boxplot.png",
+        "correlation": "eda_correlation.png",
+        "clusters": "clusters.png",
+        "model_comparison": "model_comparison.png"
+    }
+}

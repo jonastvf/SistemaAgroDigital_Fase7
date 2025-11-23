@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from flask import Flask
+from flask import Flask, send_from_directory
+
 
 def create_app():
     app = Flask(
@@ -17,6 +18,10 @@ def create_app():
     app.register_blueprint(api_bp)
 
     app.config['TEMPLATES_AUTO_RELOAD'] = True
+
+    @app.route('/assets/<path:filename>')
+    def serve_assets(filename):
+        return send_from_directory("app/assets", filename)
 
     @app.context_processor
     def inject_globals():
@@ -39,7 +44,20 @@ def create_app():
                 {
                     'label': 'IOT',
                     'url': '/dashboard/fase-3/iot',
-                }
+                    'sub_item': {
+                        'url': '/dashboard/fase4',
+                        'label': 'Gráficos e métricas'
+                    }
+                },
+                {
+                    'label': 'Fase 5 - ML',
+                    'url': '/dashboard/fase-5/ml'
+                },
+                {
+                    'label': 'Fase 5 - Calculadora AWS',
+                    'url': '/dashboard/fase-5/aws'
+                },
+
 
             ]
         }

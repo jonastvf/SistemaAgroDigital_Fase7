@@ -2,13 +2,18 @@ import os
 
 from app.db.connection.sql_alchemy import SqlAlchemyBuilder
 from app.services.planting_service import PlantingService
+from app.services.iot_service import IotService
 from flask import current_app
 from pathlib import Path
 import subprocess
 import json
 
+from app.dashboard_phase4.analytics import load_iot_readings, compute_statistics
+from app.dashboard_phase4.charts import plot_humidity, plot_ph, plot_pump
+from app.dashboard_phase4.ml import forecast_humidity
 
-class PlantingCalcAreaController:
+
+class DashboardController:
     sql_server   = os.getenv('MYSQL_HOST')
     sql_database = os.getenv('MYSQL_DATABASE')
     db_builder = SqlAlchemyBuilder(sql_server, sql_database)
@@ -68,3 +73,25 @@ class PlantingCalcAreaController:
             }
         finally:
             session.close()
+
+    def get_iot_dashboard(self):
+        df = load_iot_readings()
+
+        if len(df) == 0:
+            return {'status': 'error', 'message': 'Nenhuma leitura IoT encontrada'}
+
+        stats = compute_statistics(df)
+        charts = {
+            "humidity": plot_humidity(df),
+            "ph": plot_ph(df),
+            "pump": plot_pump(df),
+        }
+
+        forecast_img, forecast_values = forecast_humidity(df)
+
+        return {
+            "stats": stats,
+            "charts": charts,
+            "forecast_chart": forecast_img,
+            "forecast_values": forecast_values
+        }

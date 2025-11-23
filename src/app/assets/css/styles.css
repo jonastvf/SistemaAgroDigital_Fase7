@@ -109,6 +109,27 @@ main {
     padding: 8px 8px 8px 16px;
 }
 
+ul {
+    list-style-position: inside;
+    padding-left: 8px;
+}
+
+h3, h4 {
+    padding: 16px 0;
+}
+
+p {
+    padding: 8px 0;
+}
+
+nav ul li {
+    padding-bottom: 8px;
+}
+
+nav ul li a:hover {
+    font-weight: bold;
+}
+
 /* CUSTOMS CLASSES*/
 
 .center {

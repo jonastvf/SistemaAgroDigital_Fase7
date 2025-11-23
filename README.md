@@ -353,6 +353,207 @@ Dentre os arquivos e pastas presentes na raiz do projeto, definem-se:
 
 - <b>README.md</b>: arquivo que serve como guia e explicação geral sobre o projeto (o mesmo que você está lendo agora).
 
+---
+
+# FASE 3 - IOT e Automação Inteligente
+## 🎯 Objetivo da Fase
+
+Nesta etapa, simulamos um sistema IoT agrícola capaz de monitorar condições do solo (umidade, nutrientes e pH) e controlar automaticamente uma bomba de irrigação.
+O foco é reproduzir, via Wokwi e ESP32, o comportamento de sensores reais utilizados no campo.
+
+Também implementamos uma camada Python que recebe, armazena e manipula as leituras usando banco de dados SQL.
+
+---
+## 🔌 1. Sistema de Sensores – ESP32 (Wokwi)
+### 🧱 Componentes Simulados
+
+Como alguns sensores reais não existem na versão gratuita do Wokwi, foram utilizados equivalentes:
+
+Sensor Real	Sensor/Componente no Wokwi	Tipo	Função
+Sensor de Fósforo (P)	Push Button (botão azul)	Digital	0/1 (ausente/presente)
+Sensor de Potássio (K)	Push Button (botão verde)	Digital	0/1
+Sensor de pH	LDR	Analógico	Varia conforme luz, simulando pH
+Sensor de Umidade do Solo	DHT22	Digital	Percentual de umidade
+Atuador (Bomba de irrigação)	Relé + LED embutido	Digital	Liga/desliga irrigação
+
+### 📡 Funcionamento da Lógica
+
+O ESP32:
+
+- Lê todos os sensores em tempo real
+- Converte as leituras brutas
+- Aplique lógica automática:
+
+<b>Regras Implementadas</b>
+- Se umidade < 40% → bomba ON
+- Se pH fora de 6.0–7.5 → bomba ON
+- Se Fósforo E Potássio estiverem ausentes → bomba OFF
+- Caso contrário → bomba segue último estado
+
+### 🧩 Circuito Wokwi
+O circuito completo encontra-se no repositório:
+
+👉 /src/Fase 3 - IOT/
+
+Inclui:
+- main.cpp
+- diagram.json
+- platformio.ini
+- print do circuito do arquivo: 
+```bash
+ /src/Fase 3 - IOT/wokwi-smart-irrigation-control.png
+```
+
+---
+
+## 🗄️ 2. Armazenamento SQL com Python
+### 🔧 Estrutura
+
+Implementado em:
+```bash
+/src/app/services/iot_service.py
+/src/app/db/models/iot_reading.py
+/src/app/routes/api.py
+```
+
+Cada nova leitura é salva na tabela:
+
+### Tabela iot_reading
+
+Campo	Tipo
+id	INT
+timestamp	DATETIME
+humidity	DECIMAL
+ph	DECIMAL
+phosphorus	BOOLEAN
+potassium	BOOLEAN
+pump_on	BOOLEAN
+
+O sistema:
+
+- Simula leituras contínuas
+- Armazena em MySQL
+- Oferece CRUD básico
+- Expõe API REST para integração
+---
+## 🌐 3. Rota Web (Flask)
+
+<b>A página /dashboard/fase-3/iot permite:</b>
+- Gerar leituras simuladas (botão “Gerar Leitura”)
+- Exibir lista atualizada de medições
+- Atualizar tabela via fetch AJAX
+
+---
+# 📊 FASE 4 – Dashboard com Data Science
+
+## 🎯 Objetivo
+Integrar Data Science ao sistema IoT:
+- Processar dados históricos
+- Calcular estatísticas
+- Gerar gráficos
+- Prever comportamento futuro (pequena regressão linear)
+
+---
+
+## 🧠 1. Processamento e Estatísticas
+
+O controller da aplicação:
+```bash
+/src/app/controller/dashboard_controller.py
+```
+
+Gera:
+
+### Estatísticas calculadas
+
+- Umidade (máx, mín, média, desvio)
+
+- pH (máx, mín, média, desvio)
+
+- Percentual de fósforo presente
+
+- Percentual de potássio presente
+
+- Percentual da bomba ligada
+
+Essas estatísticas são estruturadas como JSON:
+
+```json
+{
+  "humidity": { "min": 24.5, "mean": 57.2, "max": 80.0, "std": 11.23 },
+  "ph": { "min": 6.3, "mean": 7.25, "max": 8.0, "std": 0.39 },
+  "nutrients": {
+    "phosphorus_ok": 34.78,
+    "potassium_ok": 29.34
+  },
+  "pump_on": 18.47
+}
+
+```
+
+---
+
+## 📈 2. Gráficos Automáticos
+Gerados em:
+
+```
+/src/app/dashboard_phase4/analytics.py
+```
+
+Renderizados em:
+```
+/src/app/dashboard_phase4/charts.py
+```
+
+Gráficos salvos em:
+
+```bash
+/assets/plots/
+```
+
+Tipos de gráficos:
+- Evolução da umidade
+- Evolução do pH
+- Frequência da bomba ligada
+- Previsão de pH usando regressão linear
+
+___
+
+## 🖥️ 3. Interface Web da Dashboard
+
+rota ``` /dashboard/fase4 ```
+
+template 
+``` /src/app/view/pages/dashboard-iot.html ```
+
+Funcionalidades:
+- Três tabelas lado a lado com estatísticas (umidade, pH, nutrientes)
+
+- Galeria com os gráficos gerados
+
+- Gráfico final com previsão ML
+
+- Layout limpo e responsivo
+
+---
+
+# ✅ Conclusão das Fases 3 e 4
+
+<b>✔ Integrado ao banco MySQL
+
+✔ APIs funcionando
+
+✔ Simulação IoT realista
+
+✔ Dashboard estatística e preditiva integrada ao Flask
+
+✔ Gráficos automáticos gerados no backend
+
+✔ Tudo unificado dentro da estrutura do projeto final
+</b>
+
+---
+
 ## 🔧 Como executar o código
 
 No terminal digite os seguintes comandos

@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Dashboard IoT – Fase 4{% endblock %}
+
+{% block content %}
+
+<style>
+    .chart-img {
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 0 10px #0002;
+    }
+
+    .chats {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    h2 {
+        margin: 24px 0;
+    }
+</style>
+
+<h1>📡 Dashboard IoT – Fase 4</h1>
+
+{% if data.error %}
+    <div class="card"><p>{{ data.error }}</p></div>
+{% else %}
+
+<h2>📊 Estatísticas</h2>
+
+<style>
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 0 10px #0001;
+    }
+
+    .stats-card table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+    }
+
+    .stats-card th {
+        text-align: left;
+        font-size: 1rem;
+        padding-bottom: 8px;
+        color: #444;
+    }
+
+    .stats-card td {
+        padding: 4px 0;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .stats-card td:last-child {
+        text-align: right;
+    }
+</style>
+
+<div class="stats-grid">
+
+    <!-- HUMIDADE -->
+    <div class="stats-card">
+        <table>
+            <tr><th>Umidade</th></tr>
+            <tr><td>Mínimo</td><td>{{ data.stats.humidity.min }}</td></tr>
+            <tr><td>Médio</td><td>{{ data.stats.humidity.mean }}</td></tr>
+            <tr><td>Máximo</td><td>{{ data.stats.humidity.max }}</td></tr>
+            <tr><td>Desvio</td><td>{{ data.stats.humidity.std }}</td></tr>
+        </table>
+    </div>
+
+    <!-- PH -->
+    <div class="stats-card">
+        <table>
+            <tr><th>pH</th></tr>
+            <tr><td>Mínimo</td><td>{{ data.stats.ph.min }}</td></tr>
+            <tr><td>Médio</td><td>{{ data.stats.ph.mean }}</td></tr>
+            <tr><td>Máximo</td><td>{{ data.stats.ph.max }}</td></tr>
+            <tr><td>Desvio</td><td>{{ data.stats.ph.std }}</td></tr>
+        </table>
+    </div>
+
+    <!-- NUTRIENTES -->
+    <div class="stats-card">
+        <table>
+            <tr><th>Nutrientes</th></tr>
+            <tr><td>Fósforo OK (%)</td><td>{{ data.stats.nutrients.phosphorus_ok }}</td></tr>
+            <tr><td>Potássio OK (%)</td><td>{{ data.stats.nutrients.potassium_ok }}</td></tr>
+            <tr><td>Bomba Ligada (%)</td><td>{{ data.stats.pump_on }}</td></tr>
+        </table>
+    </div>
+
+</div>
+
+<h2>📈 Gráficos</h2>
+<div class="chats">
+    <img src="/assets/plots/{{ data.charts.humidity }}" class="chart-img">
+    <img src="/assets/plots/{{ data.charts.ph }}" class="chart-img">
+    <img src="/assets/plots/{{ data.charts.pump }}" class="chart-img">
+</div>
+
+<h2>🤖 Previsão ML</h2>
+<div class="card">
+    <img src="/assets/plots/{{ data.forecast_chart }}" class="chart-img">
+</div>
+
+{% endif %}
+
+{% endblock %}

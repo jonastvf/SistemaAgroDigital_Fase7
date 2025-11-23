@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Fase 5 — Comparativo AWS</h2>
+<hr>
+
+<h3>Metas da Entrega 2</h3>
+
+<p><strong>Objetivo:</strong> Usar a AWS Pricing Calculator para estimar os custos (On-Demand – 100%) de uma máquina Linux simples nas regiões:</p>
+<ul>
+    <li>São Paulo (BR)</li>
+    <li>Virgínia do Norte (EUA)</li>
+</ul>
+
+<p>A máquina hospedaria uma API responsável por receber os dados dos sensores (Entrega 1) e executar o Machine Learning.</p>
+
+<h4>Configurações</h4>
+<ul>
+    <li>2 CPUs</li>
+    <li>1 GiB RAM</li>
+    <li>Até 5 Gbps de rede</li>
+    <li>50 GB de armazenamento</li>
+</ul>
+
+<h3>Comparação de Custos</h3>
+
+<p>A tabela abaixo compara os custos mensais em USD para diferentes opções de pagamento e regiões.</p>
+
+<table border="1" cellpadding="6" cellspacing="0">
+    <tr>
+        <th>Região</th>
+        <th>Compute Saving Plans</th>
+        <th>EC2 Instance Saving Plans</th>
+        <th>Sob Demanda</th>
+        <th>Instâncias Spot</th>
+    </tr>
+    <tr>
+        <td>São Paulo</td>
+        <td>2.41</td>
+        <td>2.12</td>
+        <td>4.89</td>
+        <td>0.59</td>
+    </tr>
+    <tr>
+        <td>Virgínia do Norte</td>
+        <td>1.53</td>
+        <td>1.31</td>
+        <td>3.07</td>
+        <td>1.59</td>
+    </tr>
+</table>
+
+<br>
+
+<h3>Conclusões</h3>
+
+<p>
+A solução mais barata para as configurações analisadas é o uso de 
+<strong>Instâncias Spot na região de São Paulo</strong>, com custo mensal de apenas 
+<strong>0,59 USD</strong>.
+</p>
+
+<p>Esse custo reduzido está relacionado ao modelo de uso de capacidade excedente dos EC2 locais.</p>
+
+<p>
+Embora as Instâncias Spot ofereçam baixo custo, elas possuem limitações importantes, como risco de interrupção. 
+Entretanto, como não foi mencionado que o projeto exige alta tolerância a falhas, essa opção é viável para uma versão inicial, permitindo escalar conforme a demanda.
+</p>
+
+<h3>Restrições legais e latência</h3>
+
+<p>
+Considerando que existe restrição para armazenamento de dados no exterior e que você precisa acessar rapidamente os dados coletados pelos sensores:
+</p>
+
+<p>
+<strong>A escolha mais adequada seria a região de São Paulo.</strong>
+</p>
+
+<ul>
+    <li>Atende as restrições legais de armazenamento</li>
+    <li>Menor latência para acessar os sensores</li>
+    <li>Competitiva em custos na modalidade Instâncias Spot</li>
+</ul>
+
+<hr>
+
+<h3>Documentos da AWS Pricing Calculator</h3>
+
+<p>Baixe os PDFs utilizados nos cálculos:</p>
+
+<ul>
+    <li>
+        <a href="/assets/documents/ec2 - north virginia.pdf" target="_blank">
+            EC2 – North Virginia (PDF)
+        </a>
+    </li>
+    <li>
+        <a href="/assets/documents/ec2 - sp.pdf" target="_blank">
+            EC2 – São Paulo (PDF)
+        </a>
+    </li>
+</ul>
+
+{% endblock %}
