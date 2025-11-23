@@ -103,7 +103,7 @@ class IotService:
             {
                 "id": row.id,
                 "timestamp": row.timestamp,
-                "humidity": row.umidity,
+                "humidity": row.humidity,
                 "ph": row.ph,
                 "phosphorus": row.phosphorus,
                 "potassium": row.potassium,

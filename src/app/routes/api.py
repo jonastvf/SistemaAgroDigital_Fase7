@@ -68,6 +68,11 @@ def simulate_iot():
         "data": saved.to_dict()
     })
 
+@api_bp.route('/iot/readings')
+def get_iot_readings():
+    session = SessionLocal()
+    return jsonify(IotService.get_readings(session))
+
 
 
 
