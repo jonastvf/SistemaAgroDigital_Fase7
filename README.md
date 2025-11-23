@@ -369,12 +369,15 @@ Também implementamos uma camada Python que recebe, armazena e manipula as leitu
 
 Como alguns sensores reais não existem na versão gratuita do Wokwi, foram utilizados equivalentes:
 
-Sensor Real	Sensor/Componente no Wokwi	Tipo	Função
-Sensor de Fósforo (P)	Push Button (botão azul)	Digital	0/1 (ausente/presente)
-Sensor de Potássio (K)	Push Button (botão verde)	Digital	0/1
-Sensor de pH	LDR	Analógico	Varia conforme luz, simulando pH
-Sensor de Umidade do Solo	DHT22	Digital	Percentual de umidade
-Atuador (Bomba de irrigação)	Relé + LED embutido	Digital	Liga/desliga irrigação
+## Mapeamento dos Sensores e Componentes no Wokwi
+
+| Sensor Real                  | Sensor/Componente no Wokwi     | Tipo     | Função                                   |
+|------------------------------|---------------------------------|----------|-------------------------------------------|
+| Sensor de Fósforo (P)        | Push Button (botão azul)        | Digital  | 0/1 (ausente/presente)                    |
+| Sensor de Potássio (K)       | Push Button (botão verde)       | Digital  | 0/1                                       |
+| Sensor de pH                 | LDR                             | Analógico| Varia conforme luz, simulando pH          |
+| Sensor de Umidade do Solo    | DHT22                           | Digital  | Percentual de umidade                     |
+| Atuador (Bomba de Irrigação) | Relé + LED embutido             | Digital  | Liga/desliga a irrigação                  |
 
 ### 📡 Funcionamento da Lógica
 
@@ -420,14 +423,18 @@ Cada nova leitura é salva na tabela:
 
 ### Tabela iot_reading
 
-Campo	Tipo
-id	INT
-timestamp	DATETIME
-humidity	DECIMAL
-ph	DECIMAL
-phosphorus	BOOLEAN
-potassium	BOOLEAN
-pump_on	BOOLEAN
+## Estrutura da Tabela de Dados dos Sensores
+
+| Campo       | Tipo      | Descrição                               |
+|-------------|-----------|-------------------------------------------|
+| id          | INT       | Identificador único do registro           |
+| timestamp   | DATETIME  | Data e hora da leitura                    |
+| humidity    | DECIMAL   | Umidade do solo (em %)                    |
+| ph          | DECIMAL   | Valor de pH                               |
+| phosphorus  | BOOLEAN   | Presença/ausência de fósforo (0/1)        |
+| potassium   | BOOLEAN   | Presença/ausência de potássio (0/1)       |
+| pump_on     | BOOLEAN   | Estado da bomba de irrigação (ligada? 0/1)|
+
 
 O sistema:
 
@@ -551,6 +558,177 @@ Funcionalidades:
 
 ✔ Tudo unificado dentro da estrutura do projeto final
 </b>
+
+---
+
+# 🧪 Fase 5 — Machine Learning + Comparativo AWS
+
+A Fase 5 consolida duas frentes principais do projeto:
+
+1. <b>Aplicação de Machine Learning</b> para análise preditiva dos dados dos sensores.
+
+2. <b>Comparação de custos na AWS</b> para definir a melhor opção de infraestrutura.
+
+Essa fase inclui processamento dos dados, treinamento de modelos, avaliação das métricas, criação de gráficos explicativos e análise financeira usando a AWS Pricing Calculator.
+
+## 📊 1. Machine Learning
+
+Nesta etapa, foi construído um pipeline de Machine Learning utilizando o dataset crop_yield.csv, que contém dados agrícolas históricos com variáveis que influenciam diretamente a produtividade das colheitas.
+
+### 📁 Dataset
+
+O arquivo utilizado foi:
+
+```bash
+crop_yield.csv
+```
+
+### 📌 Colunas do dataset
+
+As colunas utilizadas no treinamento do modelo foram:
+
+- <b>Crop</b> → Tipo de cultura (ex.: arroz, milho, trigo)
+
+- <b>Rainfall</b> → Pluviosidade anual (mm)
+
+- <b>Temperature</b> → Temperatura média anual (°C)
+
+- <b>Pesticide</b> → Quantidade de pesticidas utilizados (kg/ha)
+
+- <b>Fertilizer</b> → Quantidade de fertilizantes (kg/ha)
+
+- <b>Yield</b> → Produção agrícola (ton/ha) (variável alvo)
+
+🔍 <i>Essas são as colunas clássicas do dataset de produtividade agrícola normalmente usado como base acadêmica para regressão.</i>
+
+## 🎯 Objetivo
+
+O objetivo do ML foi prever a produtividade agrícola (Yield) com base nas condições ambientais e insumos utilizados.
+
+### 🔍 Modelos Avaliados
+
+Nós treinamos e comparamos:
+
+- <b>Linear Regression</b>
+
+- <b>Random Forest</b>
+
+- <b>KNN</b>
+
+- <b>SVR</b>
+
+Cada modelo foi avaliado por:
+
+<b>MAE</b>
+
+<b>MSE</b>
+
+<b>RMSE</b>
+
+<b>R²</b>
+
+Esses resultados estão todos registrados em:
+
+```bash
+assets/plots/fase5/results.json
+```
+
+## 📈 Gráficos produzidos
+
+Distribuição das features
+
+- Boxplots
+
+- Correlação
+
+- Clusters K-Means
+
+- Gráfico de comparação dos modelos
+
+- Todos os PNG estão em:
+
+```bash
+assets/plots/fase5/
+```
+
+
+E são exibidos automaticamente no dashboard.
+
+## 🖥️ 2. Comparativo de Custos — AWS
+
+A segunda parte da Fase 5 envolveu uma análise de custos utilizando a
+AWS Pricing Calculator, comparando cenários de execução da mesma instância EC2 nas regiões:
+
+- São Paulo (BR)
+
+- Norte da Virgínia (EUA)
+
+📌 Configurações da Máquina Avaliada
+
+- Linux
+
+- 2 vCPUs
+
+- 1 GiB RAM
+
+- Até 5 Gbps de rede
+
+- 50 GB de armazenamento
+
+- 100% On-Demand
+
+- Sem instâncias reservadas
+
+### 💵 Comparação de Custos Mensais
+## Comparação de Custos — AWS
+
+| Região             | Compute SP | EC2 Instance SP | On-Demand | Spot |
+|--------------------|-------------|------------------|-----------|-------|
+| São Paulo          | 2.41        | 2.12             | 4.89      | 0.59  |
+| Virgínia do Norte  | 1.53        | 1.31             | 3.07      | 1.59  |
+
+
+## 🧾 Conclusão do Estudo
+
+A opção mais barata encontrada foi:
+
+- ➡️ EC2 Spot – Região São Paulo
+- 💰 US$ 0.59 / mês
+
+Apesar de Spot apresentar risco de interrupção, para um MVP o custo extremamente reduzido compensa a limitação, considerando:
+
+- Não há requisito explícito de alta disponibilidade nesta fase
+
+- O armazenamento deve permanecer dentro do Brasil (restrições legais)
+
+- A latência local é menor
+
+- O custo é significativamente inferior ao de outras regiões
+
+### 📎 Documentos da Calculadora AWS
+
+Os PDFs gerados na AWS Pricing Calculator estão disponíveis em:
+
+[Comparativo AWS](src/app/assets/documents)
+
+Links diretos:
+
+[EC2 – North Virginia](src/app/assets/documents/ec2 - north virginia.pdf)
+
+[EC2 – São Paulo](assets/documents/ec2 - sp.pdf)
+
+
+## 🧭 Resultado Final da Fase 5
+
+- ✔ Pipeline completo de Machine Learning
+- ✔ Métricas de todos os modelos em JSON
+- ✔ Gráficos gerados automaticamente
+- ✔ Dashboard dedicado à Fase 5
+- ✔ Comparativo técnico e financeiro entre regiões AWS
+- ✔ PDFs anexos da AWS Calculator
+- ✔ Recomendação final para arquitetura inicial da solução
+
+
 
 ---
 
