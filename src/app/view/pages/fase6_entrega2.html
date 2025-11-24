@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Fase 6 – Entrega 2{% endblock %}
+
+{% block content %}
+
+<h1>📦 Fase 6 – Entrega 2: Comparação de Classificação</h1>
+
+<div class="card">
+    <h2>📊 Acurácia e Loss da CNN (Baseline)</h2>
+    <img src="/assets/plots/fase6/2_acuracy.png" class="chart-img">
+</div>
+
+<br>
+
+<div class="card">
+    <h2>🖼️ Amostras do Dataset de Treino</h2>
+    <img src="/assets/plots/fase6/2_amostras_dataset_treino.png" class="chart-img">
+</div>
+
+<br>
+
+<h2>🔍 Comparação – Imagens Originais x Recortadas (YOLOv5)</h2>
+
+<div class="grid-3">
+    <img src="/assets/plots/fase6/2_original_cropped_1.png" class="chart-img">
+    <img src="/assets/plots/fase6/2_original_cropped_2.png" class="chart-img">
+    <img src="/assets/plots/fase6/2_original_cropped_3.png" class="chart-img">
+</div>
+
+<br>
+
+<div class="grid-3">
+    <img src="/assets/plots/fase6/2_original_cropped_4.png" class="chart-img">
+    <img src="/assets/plots/fase6/2_original_cropped_5.png" class="chart-img">
+    <img src="/assets/plots/fase6/2_original_cropped_6.png" class="chart-img">
+</div>
+
+<br>
+
+<div class="card">
+    <h2>📈 Comparação de Performance (Baseline vs YOLOv5 + TL)</h2>
+    <img src="/assets/plots/fase6/2_performance.png" class="chart-img">
+</div>
+
+<br>
+
+<div class="card">
+    <h2>🏋️ Impacto do Pré-Processamento YOLOv5</h2>
+    <img src="/assets/plots/fase6/2_pos_processamento_yolo.png" class="chart-img">
+</div>
+
+<br>
+
+<div class="card">
+    <h2>📋 Tabela Comparativa de Métricas</h2>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Métrica</th>
+                <th>Baseline</th>
+                <th>YOLOv5 + TL</th>
+                <th>Diferença</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Acurácia</td>
+                <td>62.50%</td>
+                <td>75.00%</td>
+                <td>+12.50 pts</td>
+            </tr>
+            <tr>
+                <td>Precisão</td>
+                <td>57.14%</td>
+                <td>75.00%</td>
+                <td>+17.86 pts</td>
+            </tr>
+            <tr>
+                <td>Recall</td>
+                <td>100.00%</td>
+                <td>75.00%</td>
+                <td>-25.00 pts</td>
+            </tr>
+            <tr>
+                <td>F1-Score</td>
+                <td>72.72%</td>
+                <td>75.00%</td>
+                <td>+2.28 pts</td>
+            </tr>
+            <tr>
+                <td>Loss</td>
+                <td>0.5344</td>
+                <td>0.5556</td>
+                <td>+0.0212</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -40,7 +40,8 @@ aside {
 }
 
 header {
-    width: 100%
+    width: 100%;
+
 }
 
 header h1 {
@@ -139,6 +140,7 @@ nav ul li a:hover {
 }
 
 .card {
+    max-width: 80%;
     margin: 8px 8px 24px 8px;
     padding: 12px;
     border-radius: 8px;
@@ -146,6 +148,11 @@ nav ul li a:hover {
     background-color: white;
     position: relative;
 }
+
+.chart-img {
+    width: 100%;
+}
+
 
 .form-container {
     margin-bottom: 12px;

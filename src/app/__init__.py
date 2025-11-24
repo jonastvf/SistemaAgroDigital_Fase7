@@ -57,6 +57,14 @@ def create_app():
                     'label': 'Fase 5 - Calculadora AWS',
                     'url': '/dashboard/fase-5/aws'
                 },
+                {
+                    "label": "Fase 6 - Detecção de objetos",
+                    "url": '/dashboard/fase-6/visao',
+                    "sub_item": {
+                        "label": "Comparaçao de pipelines",
+                        "url": '/dashboard/fase-6/parte-2'
+                    }
+                }
 
 
             ]

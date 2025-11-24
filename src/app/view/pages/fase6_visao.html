@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – Fase 6 (Visão Computacional){% endblock %}
+
+{% block content %}
+
+<style>
+  .fase6-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .fase6-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .fase6-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .fase6-img {
+    width: auto;
+    height: 150px;
+    display: block;
+    border-radius: 8px;
+  }
+
+  .fase6-img-mid{
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      display: block;
+  }
+
+  .inference-images {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      padding: 24px;
+  }
+
+  .fase6-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .fase6-table th,
+  .fase6-table td {
+    border: 1px solid #ddd;
+    padding: 8px 10px;
+    text-align: center;
+  }
+
+  .fase6-table th {
+    background: #f5f5f5;
+    font-weight: 600;
+  }
+
+  @media (max-width: 900px) {
+    .fase6-grid-2,
+    .fase6-grid-3 {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<h1>👁️ Visão Computacional – Fase 6</h1>
+<p>
+  Nesta fase, a <strong>FarmTech Solutions</strong> experimentou a detecção de objetos com
+  <strong>YOLOv5</strong>, treinando modelos para reconhecer
+  <strong>banana</strong> e <strong>garfo</strong> em um dataset customizado.
+</p>
+
+<hr>
+
+<h2>📉 Treinamento YOLOv5</h2>
+<div class="fase6-card">
+  <p>
+    Curvas de <strong>loss</strong> (treino/validação) e métricas de
+    <strong>precisão / recall / mAP</strong> ao longo das épocas para o experimento principal.
+  </p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Métrica</th>
+            <th>Modelo 30 Épocas (YOLOv5s)</th>
+            <th>Modelo 60 Épocas (YOLOv5s)</th>
+            <th>Modelo 60 Épocas (YOLOv5m)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>mAP@0.50 (Geral)</td>
+            <td>0.393</td>
+            <td>0.513</td>
+            <td>0.789</td>
+        </tr>
+        <tr>
+            <td>mAP@0.50 (Banana)</td>
+            <td>0.687</td>
+            <td>0.764</td>
+            <td>0.995</td>
+        </tr>
+        <tr>
+            <td>mAP@0.50 (Fork)</td>
+            <td>0.0999</td>
+            <td>0.262</td>
+            <td>0.584</td>
+        </tr>
+        <tr>
+            <td>Tamanho do modelo (MB)</td>
+            <td>14.4</td>
+            <td>14.4</td>
+            <td>42.2</td>
+        </tr>
+        <tr>
+            <td>Tempo de treino (h)</td>
+            <td>0.56</td>
+            <td>1.13</td>
+            <td>0.13</td>
+        </tr>
+    </tbody>
+</table>
+
+</div>
+
+<h2>🧪 Inferência em Imagens de Teste</h2>
+<div class="fase6-card">
+  <p>
+    Exemplos de detecção no conjunto de teste, com as caixas delimitadoras e
+    probabilidades previstas pelo modelo.
+  </p>
+    <div class="inference-images">
+        <img
+            src="/assets/plots/{{ data.charts.inference_example_1 }}"
+            alt="Exemplos de detecção YOLOv5 em imagens de teste"
+            class="fase6-img"
+          >
+        <img
+        src="/assets/plots/{{ data.charts.inference_example_2 }}"
+        alt="Exemplos de detecção YOLOv5 em imagens de teste"
+        class="fase6-img"
+        >
+        <img
+        src="/assets/plots/{{ data.charts.inference_example_3 }}"
+        alt="Exemplos de detecção YOLOv5 em imagens de teste"
+        class="fase6-img"
+        >
+        <img
+        src="/assets/plots/{{ data.charts.inference_example_6 }}"
+        alt="Exemplos de detecção YOLOv5 em imagens de teste"
+        class="fase6-img"
+      >
+        <img
+        src="/assets/plots/{{ data.charts.inference_example_7 }}"
+        alt="Exemplos de detecção YOLOv5 em imagens de teste"
+        class="fase6-img"
+      >
+        <img
+        src="/assets/plots/{{ data.charts.inference_example_1 }}"
+        alt="Exemplos de detecção YOLOv5 em imagens de teste"
+        class="fase6-img"
+      >
+    </div>
+</div>
+
+<h2>📊 Comparação de Modelos</h2>
+
+<div class="fase6-grid-2">
+  <div class="fase6-card">
+    <h3>mAP@0.50 por Época</h3>
+    <p>
+      Evolução do <strong>mAP@0.50</strong> ao longo das épocas para
+      os modelos <em>small</em> e <em>medium</em>.
+    </p>
+    <img
+      src="/assets/plots/{{ data.charts.map_epochs }}"
+      alt="mAP por época para modelos small e medium"
+      class="fase6-img-mid"
+    >
+  </div>
+
+  <div class="fase6-card">
+    <h3>Val Box Loss</h3>
+    <p>
+      Comparação da perda de validação das <strong>bounding boxes</strong> (val/box_loss)
+      entre os modelos treinados.
+    </p>
+    <img
+      src="/assets/plots/{{ data.charts.val_box_loss }}"
+      alt="Comparação de val/box_loss entre modelos"
+      class="fase6-img-mid"
+    >
+  </div>
+</div>
+
+<div class="fase6-grid-2" style="margin-top: 20px;">
+  <div class="fase6-card">
+    <h3>mAP por Modelo e Classe</h3>
+    <p>
+      Comparação final de <strong>mAP@0.50</strong> por modelo
+      (30 e 60 épocas – small, 60 épocas – medium) e por classe
+      (<em>banana</em> e <em>garfo</em>).
+    </p>
+    <img
+      src="/assets/plots/{{ data.charts.map_models }}"
+      alt="Comparativo de mAP por modelo e classe"
+      class="fase6-img-mid"
+    >
+  </div>
+
+  <div class="fase6-card">
+    <h3>Tabela Gráfica de Performance</h3>
+    <p>
+      Visão consolidada das métricas principais (mAP, tamanho do modelo e tempo de treino).
+    </p>
+      <h2>Tabela Comparativa de Performance dos Modelos</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Modelo</th>
+            <th>mAP@.50 Geral</th>
+            <th>mAP@.50 Banana</th>
+            <th>mAP@.50 Garfo</th>
+            <th>Tamanho (MB)</th>
+            <th>Tempo (min)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>30 Épocas (Pequeno)</td>
+            <td>0.393</td>
+            <td>0.687</td>
+            <td>0.0999</td>
+            <td>14.4</td>
+            <td>34</td>
+        </tr>
+        <tr>
+            <td>60 Épocas (Pequeno)</td>
+            <td>0.513</td>
+            <td>0.764</td>
+            <td>0.262</td>
+            <td>14.4</td>
+            <td>68</td>
+        </tr>
+        <tr>
+            <td>60 Épocas (Médio)</td>
+            <td>0.789</td>
+            <td>0.995</td>
+            <td>0.584</td>
+            <td>42.2</td>
+            <td>8</td>
+        </tr>
+    </tbody>
+</table>
+
+<!--    <img-->
+<!--      src="/assets/plots/{{ data.charts.models_table }}"-->
+<!--      alt="Tabela comparativa de performance dos modelos"-->
+<!--      class="fase6-img"-->
+<!--    >-->
+  </div>
+</div>
+
+<h2 style="margin-top: 30px;">📑 Resumo Numérico dos Experimentos</h2>
+<div class="fase6-card">
+  <table class="fase6-table">
+    <thead>
+      <tr>
+        <th>Modelo</th>
+        <th>mAP@0.50 Geral</th>
+        <th>mAP@0.50 Banana</th>
+        <th>mAP@0.50 Garfo</th>
+        <th>Tamanho (MB)</th>
+        <th>Tempo (min)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data.metrics_table %}
+      <tr>
+        <td>{{ row.modelo }}</td>
+        <td>{{ "%.3f"|format(row.map_geral) }}</td>
+        <td>{{ "%.3f"|format(row.map_banana) }}</td>
+        <td>{{ "%.3f"|format(row.map_garfo) }}</td>
+        <td>{{ row.tamanho_mb }}</td>
+        <td>{{ row.tempo_min }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<h2 style="margin-top: 30px;">📝 Principais Conclusões</h2>
+<div class="fase6-card">
+  <ul>
+    {% for item in data.highlights %}
+      <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+
+  <p style="margin-top: 10px;">
+    Em resumo, para ambientes com <strong>pouca restrição de hardware</strong>
+    (cloud/desktop), o modelo <strong>YOLOv5m</strong> é o mais indicado.
+    Já para dispositivos embarcados com memória limitada, o
+    <strong>YOLOv5s</strong> continua sendo uma opção viável, desde que
+    as limitações para objetos mais complexos (como o garfo) sejam bem documentadas.
+  </p>
+</div>
+
+{% endblock %}
