@@ -406,6 +406,23 @@ Inclui:
 ```bash
  /src/Fase 3 - IOT/wokwi-smart-irrigation-control.png
 ```
+---
+
+## 🔔 Alertas Automáticos via AWS SNS (Fase 7 Integrada)
+
+Ao gerar uma leitura IoT, o sistema verifica cenários de risco:
+
+- Umidade muito baixa
+
+- pH fora do intervalo ideal
+
+- Ausência de fósforo
+
+- Ausência de potássio
+
+Caso qualquer condição seja detectada, o backend chama o serviço AwsAlertService, que publica um alerta no tópico SNS configurado na AWS, permitindo o envio de notificações para e-mail, SMS ou sistemas de monitoramento.
+
+Esse fluxo torna a simulação da fase 3 totalmente integrada com a computação em nuvem da fase 7, seguindo o objetivo do projeto final.
 
 ---
 
@@ -728,6 +745,181 @@ Links diretos:
 - ✔ PDFs anexos da AWS Calculator
 - ✔ Recomendação final para arquitetura inicial da solução
 
+---
+
+# 🧠 FASE 6 – Visão Computacional com YOLOv5 e Transfer Learning
+
+Esta fase teve como objetivo demonstrar na prática o uso de modelos de visão computacional para detecção e classificação de imagens, atendendo às demandas técnicas propostas pela FarmTech Solutions. O projeto foi dividido em duas entregas principais, além de toda a documentação e visualização dos resultados no dashboard.
+
+## 📦 Entrega 1 — Treinamento Customizado do YOLOv5
+
+Nesta primeira parte, a equipe montou um pipeline completo de detecção de objetos utilizando o YOLOv5, incluindo:
+
+### ✔ Montagem do dataset
+
+- 2 classes: banana e fork
+
+- Dataset com 80 imagens rotuladas no MakeSense AI
+
+<b>Divisão</b>:
+
+- 64 treino
+
+- 8 validação
+
+- 8 teste
+
+### ✔ Treinamento dos modelos YOLO
+
+Foram treinadas 3 variantes do YOLOv5:
+
+| Modelo   | Épocas | Arquitetura | Tamanho  | Resultado        |
+|----------|--------|-------------|----------|------------------|
+| YOLOv5s  | 30     | Small       | 14.4 MB  | mAP@50 = 0.393   |
+| YOLOv5s  | 60     | Small       | 14.4 MB  | mAP@50 = 0.513   |
+| YOLOv5m  | 60     | Medium      | 42.2 MB  | mAP@50 = 0.789   |
+
+
+
+### 🔍 Gráficos de treinamento
+
+As imagens foram geradas automaticamente e estão disponíveis no painel:
+
+- perdas, precisão, recall
+
+- Inferências reais sobre o conjunto de teste
+
+- Comparações lado a lado entre modelos
+
+- Tabelas comparativas de desempenho
+
+O dashboard exibe:
+
+- Curvas de loss
+
+- Curvas de mAP
+
+- Inferências com bounding boxes
+
+- Comparativos visuais entre YOLOv5s e YOLOv5m
+
+## 📦 Entrega 2 — Avaliação de Abordagens Concorrentes
+
+O enunciado exige comparar diferentes métodos além do YOLO customizado. Para isso, foram implementadas duas abordagens distintas de classificação:
+
+### 1️⃣ Abordagem 1 — Transfer Learning puro (Baseline)
+
+Modelo usado: MobileNetV2 (TensorFlow)
+
+Treinamento direto nas imagens sem pré-processamento de detecção
+
+### Métricas no conjunto de teste:
+
+| Métrica    | Valor   |
+|------------|---------|
+| Acurácia   | 62.50%  |
+| Precisão   | 57.14%  |
+| Recall     | 100%    |
+| F1-Score   | 72.72%  |
+| Loss       | 0.5344  |
+
+
+### 📌 Comportamento:
+O modelo acerta quase todos os positivos (recall), mas comete muitos falsos positivos — um "generalista inseguro".
+
+### 2️⃣ Abordagem 2 — YOLOv5 + Transfer Learning (ROI Cropping)
+
+Pipeline em duas etapas:
+
+1. YOLOv5 detecta o objeto e recorta a região de interesse
+2. A imagem recortada é classificada pelo MobileNetV2
+
+# 📊 Resultados:
+
+| Métrica    | Valor   |
+|------------|---------|
+| Acurácia   | 75%     |
+| Precisão   | 75%     |
+| Recall     | 75%     |
+| F1-Score   | 75%     |
+| Loss       | 0.5556  |
+
+
+### 📌 Comportamento:
+Melhor precisão e acurácia, mas recall menor — dependência da detecção prévia do YOLO.
+
+## 🎯 Conclusão Técnica
+
+A integração YOLOv5 → MobileNetV2 melhora significativamente a precisão e reduz falsos positivos, tornando o modelo mais confiável em cenários reais.
+
+Há, porém, um trade-off natural:
+
+- +17.86 pts em Precisão
+
+- -25 pts em Recall
+
+Porque falhas de detecção do YOLO impedem a classificação.
+
+## 📊 Comparação Geral das Abordagens
+
+| Métrica   | Baseline (TL) | YOLOv5 + TL | Diferença     |
+|-----------|----------------|-------------|----------------|
+| Acurácia  | 62.50%         | 75%         | +12.50 pts     |
+| Precisão  | 57.14%         | 75%         | +17.86 pts     |
+| Recall    | 100%           | 75%         | -25 pts        |
+| F1-Score  | 72.72%         | 75%         | +2.28 pts      |
+| Loss      | 0.5344         | 0.5556      | +0.0212        |
+
+
+### 📌 Interpretação
+
+- YOLO+TL → mais confiável
+
+- TL puro → mais abrangente
+
+A escolha depende do custo de erros no negócio.
+
+### 🎥 Vídeo Demonstrativo
+
+O vídeo da fase 6 deve ser colocado no YouTube como não listado e o link colado aqui:
+
+👉 Link do vídeo: Adicionar aqui
+
+### 📓 Notebook / Colab da Fase 6
+
+O notebook completo, com células executadas, código comentado e análises:
+
+- 👉 [Notebook Entregavel 1](src/Fase%206%20-%20Visao/notebooks/entregavel_1_fase6_cap1.ipynb)
+- 👉 [Notebook Entregavel 2](src/Fase%206%20-%20Visao/notebooks/Entrega2_RaphaelDaSilva_RM561452_fase6_cap1.ipynb)
+    
+
+### 🗂 Estrutura do Repositório
+```bash
+/app
+  /assets
+     /plots
+        /fase6
+           2_acuracy.png
+           2_performance.png
+           2_pos_processamento_yolo.png
+           2_amostras_dataset_treino.png
+           2_original_cropped_1.png
+           2_original_cropped_2.png
+           2_original_cropped_3.png
+           2_original_cropped_4.png
+           2_original_cropped_5.png
+           2_original_cropped_6.png
+           results_yolov5.png
+           tabela_modelos.png
+
+```
+
+## 🏁 Status
+
+- ✔ Entrega 1 concluída
+- ✔ Entrega 2 concluída
+- ✔ Dashboard integrado
+- ✔ Documentação finalizada
 
 
 ---

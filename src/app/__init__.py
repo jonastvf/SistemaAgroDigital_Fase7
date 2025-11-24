@@ -30,7 +30,7 @@ def create_app():
             "title": "System Agro Digital",
             "menu": [
                 {
-                    'label': 'Area de plantio',
+                    'label': 'Fase 1 -Area de plantio',
                     'url': '/dashboard/fase-1',
                     'sub_item': {
                         'url': '/dashboard/fase-1/statistics',
@@ -38,11 +38,11 @@ def create_app():
                     }
                 },
                 {
-                    'label': 'Previsão do tempo',
+                    'label': 'Fase 1 - Previsão do tempo',
                     'url': '/dashboard/fase-1/weather',
                 },
                 {
-                    'label': 'IOT',
+                    'label': 'Fase 3 - IOT',
                     'url': '/dashboard/fase-3/iot',
                     'sub_item': {
                         'url': '/dashboard/fase4',

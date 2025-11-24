@@ -11,6 +11,8 @@ import json
 from app.dashboard_phase4.analytics import load_iot_readings, compute_statistics
 from app.dashboard_phase4.charts import plot_humidity, plot_ph, plot_pump
 from app.dashboard_phase4.ml import forecast_humidity
+from app.services.aws_alert_service import AwsAlertService
+
 
 
 class DashboardController:
