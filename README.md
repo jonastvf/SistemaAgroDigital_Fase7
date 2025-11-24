@@ -883,7 +883,7 @@ A escolha depende do custo de erros no negócio.
 
 O vídeo da fase 6 deve ser colocado no YouTube como não listado e o link colado aqui:
 
-👉 Link do vídeo: Adicionar aqui
+👉 Link do vídeo: [Youtube](https://youtu.be/xPOLT2DiYGg)
 
 ### 📓 Notebook / Colab da Fase 6
 
