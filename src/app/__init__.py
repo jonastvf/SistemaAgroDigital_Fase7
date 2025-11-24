@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from flask import Flask
+from flask import Flask, send_from_directory
+
 
 def create_app():
     app = Flask(
@@ -18,6 +19,10 @@ def create_app():
 
     app.config['TEMPLATES_AUTO_RELOAD'] = True
 
+    @app.route('/assets/<path:filename>')
+    def serve_assets(filename):
+        return send_from_directory("app/assets", filename)
+
     @app.context_processor
     def inject_globals():
         return {
@@ -25,7 +30,7 @@ def create_app():
             "title": "System Agro Digital",
             "menu": [
                 {
-                    'label': 'Area de plantio',
+                    'label': 'Fase 1 -Area de plantio',
                     'url': '/dashboard/fase-1',
                     'sub_item': {
                         'url': '/dashboard/fase-1/statistics',
@@ -33,13 +38,34 @@ def create_app():
                     }
                 },
                 {
-                    'label': 'Previsão do tempo',
+                    'label': 'Fase 1 - Previsão do tempo',
                     'url': '/dashboard/fase-1/weather',
                 },
                 {
-                    'label': 'IOT',
+                    'label': 'Fase 3 - IOT',
                     'url': '/dashboard/fase-3/iot',
+                    'sub_item': {
+                        'url': '/dashboard/fase4',
+                        'label': 'Gráficos e métricas'
+                    }
+                },
+                {
+                    'label': 'Fase 5 - ML',
+                    'url': '/dashboard/fase-5/ml'
+                },
+                {
+                    'label': 'Fase 5 - Calculadora AWS',
+                    'url': '/dashboard/fase-5/aws'
+                },
+                {
+                    "label": "Fase 6 - Detecção de objetos",
+                    "url": '/dashboard/fase-6/visao',
+                    "sub_item": {
+                        "label": "Comparaçao de pipelines",
+                        "url": '/dashboard/fase-6/parte-2'
+                    }
                 }
+
 
             ]
         }

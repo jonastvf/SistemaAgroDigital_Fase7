@@ -353,6 +353,577 @@ Dentre os arquivos e pastas presentes na raiz do projeto, definem-se:
 
 - <b>README.md</b>: arquivo que serve como guia e explicação geral sobre o projeto (o mesmo que você está lendo agora).
 
+---
+
+# FASE 3 - IOT e Automação Inteligente
+## 🎯 Objetivo da Fase
+
+Nesta etapa, simulamos um sistema IoT agrícola capaz de monitorar condições do solo (umidade, nutrientes e pH) e controlar automaticamente uma bomba de irrigação.
+O foco é reproduzir, via Wokwi e ESP32, o comportamento de sensores reais utilizados no campo.
+
+Também implementamos uma camada Python que recebe, armazena e manipula as leituras usando banco de dados SQL.
+
+---
+## 🔌 1. Sistema de Sensores – ESP32 (Wokwi)
+### 🧱 Componentes Simulados
+
+Como alguns sensores reais não existem na versão gratuita do Wokwi, foram utilizados equivalentes:
+
+## Mapeamento dos Sensores e Componentes no Wokwi
+
+| Sensor Real                  | Sensor/Componente no Wokwi     | Tipo     | Função                                   |
+|------------------------------|---------------------------------|----------|-------------------------------------------|
+| Sensor de Fósforo (P)        | Push Button (botão azul)        | Digital  | 0/1 (ausente/presente)                    |
+| Sensor de Potássio (K)       | Push Button (botão verde)       | Digital  | 0/1                                       |
+| Sensor de pH                 | LDR                             | Analógico| Varia conforme luz, simulando pH          |
+| Sensor de Umidade do Solo    | DHT22                           | Digital  | Percentual de umidade                     |
+| Atuador (Bomba de Irrigação) | Relé + LED embutido             | Digital  | Liga/desliga a irrigação                  |
+
+### 📡 Funcionamento da Lógica
+
+O ESP32:
+
+- Lê todos os sensores em tempo real
+- Converte as leituras brutas
+- Aplique lógica automática:
+
+<b>Regras Implementadas</b>
+- Se umidade < 40% → bomba ON
+- Se pH fora de 6.0–7.5 → bomba ON
+- Se Fósforo E Potássio estiverem ausentes → bomba OFF
+- Caso contrário → bomba segue último estado
+
+### 🧩 Circuito Wokwi
+O circuito completo encontra-se no repositório:
+
+👉 /src/Fase 3 - IOT/
+
+Inclui:
+- main.cpp
+- diagram.json
+- platformio.ini
+- print do circuito do arquivo: 
+```bash
+ /src/Fase 3 - IOT/wokwi-smart-irrigation-control.png
+```
+---
+
+## 🔔 Alertas Automáticos via AWS SNS (Fase 7 Integrada)
+
+Ao gerar uma leitura IoT, o sistema verifica cenários de risco:
+
+- Umidade muito baixa
+
+- pH fora do intervalo ideal
+
+- Ausência de fósforo
+
+- Ausência de potássio
+
+Caso qualquer condição seja detectada, o backend chama o serviço AwsAlertService, que publica um alerta no tópico SNS configurado na AWS, permitindo o envio de notificações para e-mail, SMS ou sistemas de monitoramento.
+
+Esse fluxo torna a simulação da fase 3 totalmente integrada com a computação em nuvem da fase 7, seguindo o objetivo do projeto final.
+
+---
+
+## 🗄️ 2. Armazenamento SQL com Python
+### 🔧 Estrutura
+
+Implementado em:
+```bash
+/src/app/services/iot_service.py
+/src/app/db/models/iot_reading.py
+/src/app/routes/api.py
+```
+
+Cada nova leitura é salva na tabela:
+
+### Tabela iot_reading
+
+## Estrutura da Tabela de Dados dos Sensores
+
+| Campo       | Tipo      | Descrição                               |
+|-------------|-----------|-------------------------------------------|
+| id          | INT       | Identificador único do registro           |
+| timestamp   | DATETIME  | Data e hora da leitura                    |
+| humidity    | DECIMAL   | Umidade do solo (em %)                    |
+| ph          | DECIMAL   | Valor de pH                               |
+| phosphorus  | BOOLEAN   | Presença/ausência de fósforo (0/1)        |
+| potassium   | BOOLEAN   | Presença/ausência de potássio (0/1)       |
+| pump_on     | BOOLEAN   | Estado da bomba de irrigação (ligada? 0/1)|
+
+
+O sistema:
+
+- Simula leituras contínuas
+- Armazena em MySQL
+- Oferece CRUD básico
+- Expõe API REST para integração
+---
+## 🌐 3. Rota Web (Flask)
+
+<b>A página /dashboard/fase-3/iot permite:</b>
+- Gerar leituras simuladas (botão “Gerar Leitura”)
+- Exibir lista atualizada de medições
+- Atualizar tabela via fetch AJAX
+
+---
+# 📊 FASE 4 – Dashboard com Data Science
+
+## 🎯 Objetivo
+Integrar Data Science ao sistema IoT:
+- Processar dados históricos
+- Calcular estatísticas
+- Gerar gráficos
+- Prever comportamento futuro (pequena regressão linear)
+
+---
+
+## 🧠 1. Processamento e Estatísticas
+
+O controller da aplicação:
+```bash
+/src/app/controller/dashboard_controller.py
+```
+
+Gera:
+
+### Estatísticas calculadas
+
+- Umidade (máx, mín, média, desvio)
+
+- pH (máx, mín, média, desvio)
+
+- Percentual de fósforo presente
+
+- Percentual de potássio presente
+
+- Percentual da bomba ligada
+
+Essas estatísticas são estruturadas como JSON:
+
+```json
+{
+  "humidity": { "min": 24.5, "mean": 57.2, "max": 80.0, "std": 11.23 },
+  "ph": { "min": 6.3, "mean": 7.25, "max": 8.0, "std": 0.39 },
+  "nutrients": {
+    "phosphorus_ok": 34.78,
+    "potassium_ok": 29.34
+  },
+  "pump_on": 18.47
+}
+
+```
+
+---
+
+## 📈 2. Gráficos Automáticos
+Gerados em:
+
+```
+/src/app/dashboard_phase4/analytics.py
+```
+
+Renderizados em:
+```
+/src/app/dashboard_phase4/charts.py
+```
+
+Gráficos salvos em:
+
+```bash
+/assets/plots/
+```
+
+Tipos de gráficos:
+- Evolução da umidade
+- Evolução do pH
+- Frequência da bomba ligada
+- Previsão de pH usando regressão linear
+
+___
+
+## 🖥️ 3. Interface Web da Dashboard
+
+rota ``` /dashboard/fase4 ```
+
+template 
+``` /src/app/view/pages/dashboard-iot.html ```
+
+Funcionalidades:
+- Três tabelas lado a lado com estatísticas (umidade, pH, nutrientes)
+
+- Galeria com os gráficos gerados
+
+- Gráfico final com previsão ML
+
+- Layout limpo e responsivo
+
+---
+
+# ✅ Conclusão das Fases 3 e 4
+
+<b>✔ Integrado ao banco MySQL
+
+✔ APIs funcionando
+
+✔ Simulação IoT realista
+
+✔ Dashboard estatística e preditiva integrada ao Flask
+
+✔ Gráficos automáticos gerados no backend
+
+✔ Tudo unificado dentro da estrutura do projeto final
+</b>
+
+---
+
+# 🧪 Fase 5 — Machine Learning + Comparativo AWS
+
+A Fase 5 consolida duas frentes principais do projeto:
+
+1. <b>Aplicação de Machine Learning</b> para análise preditiva dos dados dos sensores.
+
+2. <b>Comparação de custos na AWS</b> para definir a melhor opção de infraestrutura.
+
+Essa fase inclui processamento dos dados, treinamento de modelos, avaliação das métricas, criação de gráficos explicativos e análise financeira usando a AWS Pricing Calculator.
+
+## 📊 1. Machine Learning
+
+Nesta etapa, foi construído um pipeline de Machine Learning utilizando o dataset crop_yield.csv, que contém dados agrícolas históricos com variáveis que influenciam diretamente a produtividade das colheitas.
+
+### 📁 Dataset
+
+O arquivo utilizado foi:
+
+```bash
+crop_yield.csv
+```
+
+### 📌 Colunas do dataset
+
+As colunas utilizadas no treinamento do modelo foram:
+
+- <b>Crop</b> → Tipo de cultura (ex.: arroz, milho, trigo)
+
+- <b>Rainfall</b> → Pluviosidade anual (mm)
+
+- <b>Temperature</b> → Temperatura média anual (°C)
+
+- <b>Pesticide</b> → Quantidade de pesticidas utilizados (kg/ha)
+
+- <b>Fertilizer</b> → Quantidade de fertilizantes (kg/ha)
+
+- <b>Yield</b> → Produção agrícola (ton/ha) (variável alvo)
+
+🔍 <i>Essas são as colunas clássicas do dataset de produtividade agrícola normalmente usado como base acadêmica para regressão.</i>
+
+## 🎯 Objetivo
+
+O objetivo do ML foi prever a produtividade agrícola (Yield) com base nas condições ambientais e insumos utilizados.
+
+### 🔍 Modelos Avaliados
+
+Nós treinamos e comparamos:
+
+- <b>Linear Regression</b>
+
+- <b>Random Forest</b>
+
+- <b>KNN</b>
+
+- <b>SVR</b>
+
+Cada modelo foi avaliado por:
+
+<b>MAE</b>
+
+<b>MSE</b>
+
+<b>RMSE</b>
+
+<b>R²</b>
+
+Esses resultados estão todos registrados em:
+
+```bash
+assets/plots/fase5/results.json
+```
+
+## 📈 Gráficos produzidos
+
+Distribuição das features
+
+- Boxplots
+
+- Correlação
+
+- Clusters K-Means
+
+- Gráfico de comparação dos modelos
+
+- Todos os PNG estão em:
+
+```bash
+assets/plots/fase5/
+```
+
+
+E são exibidos automaticamente no dashboard.
+
+## 🖥️ 2. Comparativo de Custos — AWS
+
+A segunda parte da Fase 5 envolveu uma análise de custos utilizando a
+AWS Pricing Calculator, comparando cenários de execução da mesma instância EC2 nas regiões:
+
+- São Paulo (BR)
+
+- Norte da Virgínia (EUA)
+
+📌 Configurações da Máquina Avaliada
+
+- Linux
+
+- 2 vCPUs
+
+- 1 GiB RAM
+
+- Até 5 Gbps de rede
+
+- 50 GB de armazenamento
+
+- 100% On-Demand
+
+- Sem instâncias reservadas
+
+### 💵 Comparação de Custos Mensais
+## Comparação de Custos — AWS
+
+| Região             | Compute SP | EC2 Instance SP | On-Demand | Spot |
+|--------------------|-------------|------------------|-----------|-------|
+| São Paulo          | 2.41        | 2.12             | 4.89      | 0.59  |
+| Virgínia do Norte  | 1.53        | 1.31             | 3.07      | 1.59  |
+
+
+## 🧾 Conclusão do Estudo
+
+A opção mais barata encontrada foi:
+
+- ➡️ EC2 Spot – Região São Paulo
+- 💰 US$ 0.59 / mês
+
+Apesar de Spot apresentar risco de interrupção, para um MVP o custo extremamente reduzido compensa a limitação, considerando:
+
+- Não há requisito explícito de alta disponibilidade nesta fase
+
+- O armazenamento deve permanecer dentro do Brasil (restrições legais)
+
+- A latência local é menor
+
+- O custo é significativamente inferior ao de outras regiões
+
+### 📎 Documentos da Calculadora AWS
+
+Os PDFs gerados na AWS Pricing Calculator estão disponíveis em:
+
+[Comparativo AWS](src/app/assets/documents)
+
+Links diretos:
+
+[EC2 – North Virginia](src/app/assets/documents/ec2 - north virginia.pdf)
+
+[EC2 – São Paulo](assets/documents/ec2 - sp.pdf)
+
+
+## 🧭 Resultado Final da Fase 5
+
+- ✔ Pipeline completo de Machine Learning
+- ✔ Métricas de todos os modelos em JSON
+- ✔ Gráficos gerados automaticamente
+- ✔ Dashboard dedicado à Fase 5
+- ✔ Comparativo técnico e financeiro entre regiões AWS
+- ✔ PDFs anexos da AWS Calculator
+- ✔ Recomendação final para arquitetura inicial da solução
+
+---
+
+# 🧠 FASE 6 – Visão Computacional com YOLOv5 e Transfer Learning
+
+Esta fase teve como objetivo demonstrar na prática o uso de modelos de visão computacional para detecção e classificação de imagens, atendendo às demandas técnicas propostas pela FarmTech Solutions. O projeto foi dividido em duas entregas principais, além de toda a documentação e visualização dos resultados no dashboard.
+
+## 📦 Entrega 1 — Treinamento Customizado do YOLOv5
+
+Nesta primeira parte, a equipe montou um pipeline completo de detecção de objetos utilizando o YOLOv5, incluindo:
+
+### ✔ Montagem do dataset
+
+- 2 classes: banana e fork
+
+- Dataset com 80 imagens rotuladas no MakeSense AI
+
+<b>Divisão</b>:
+
+- 64 treino
+
+- 8 validação
+
+- 8 teste
+
+### ✔ Treinamento dos modelos YOLO
+
+Foram treinadas 3 variantes do YOLOv5:
+
+| Modelo   | Épocas | Arquitetura | Tamanho  | Resultado        |
+|----------|--------|-------------|----------|------------------|
+| YOLOv5s  | 30     | Small       | 14.4 MB  | mAP@50 = 0.393   |
+| YOLOv5s  | 60     | Small       | 14.4 MB  | mAP@50 = 0.513   |
+| YOLOv5m  | 60     | Medium      | 42.2 MB  | mAP@50 = 0.789   |
+
+
+
+### 🔍 Gráficos de treinamento
+
+As imagens foram geradas automaticamente e estão disponíveis no painel:
+
+- perdas, precisão, recall
+
+- Inferências reais sobre o conjunto de teste
+
+- Comparações lado a lado entre modelos
+
+- Tabelas comparativas de desempenho
+
+O dashboard exibe:
+
+- Curvas de loss
+
+- Curvas de mAP
+
+- Inferências com bounding boxes
+
+- Comparativos visuais entre YOLOv5s e YOLOv5m
+
+## 📦 Entrega 2 — Avaliação de Abordagens Concorrentes
+
+O enunciado exige comparar diferentes métodos além do YOLO customizado. Para isso, foram implementadas duas abordagens distintas de classificação:
+
+### 1️⃣ Abordagem 1 — Transfer Learning puro (Baseline)
+
+Modelo usado: MobileNetV2 (TensorFlow)
+
+Treinamento direto nas imagens sem pré-processamento de detecção
+
+### Métricas no conjunto de teste:
+
+| Métrica    | Valor   |
+|------------|---------|
+| Acurácia   | 62.50%  |
+| Precisão   | 57.14%  |
+| Recall     | 100%    |
+| F1-Score   | 72.72%  |
+| Loss       | 0.5344  |
+
+
+### 📌 Comportamento:
+O modelo acerta quase todos os positivos (recall), mas comete muitos falsos positivos — um "generalista inseguro".
+
+### 2️⃣ Abordagem 2 — YOLOv5 + Transfer Learning (ROI Cropping)
+
+Pipeline em duas etapas:
+
+1. YOLOv5 detecta o objeto e recorta a região de interesse
+2. A imagem recortada é classificada pelo MobileNetV2
+
+# 📊 Resultados:
+
+| Métrica    | Valor   |
+|------------|---------|
+| Acurácia   | 75%     |
+| Precisão   | 75%     |
+| Recall     | 75%     |
+| F1-Score   | 75%     |
+| Loss       | 0.5556  |
+
+
+### 📌 Comportamento:
+Melhor precisão e acurácia, mas recall menor — dependência da detecção prévia do YOLO.
+
+## 🎯 Conclusão Técnica
+
+A integração YOLOv5 → MobileNetV2 melhora significativamente a precisão e reduz falsos positivos, tornando o modelo mais confiável em cenários reais.
+
+Há, porém, um trade-off natural:
+
+- +17.86 pts em Precisão
+
+- -25 pts em Recall
+
+Porque falhas de detecção do YOLO impedem a classificação.
+
+## 📊 Comparação Geral das Abordagens
+
+| Métrica   | Baseline (TL) | YOLOv5 + TL | Diferença     |
+|-----------|----------------|-------------|----------------|
+| Acurácia  | 62.50%         | 75%         | +12.50 pts     |
+| Precisão  | 57.14%         | 75%         | +17.86 pts     |
+| Recall    | 100%           | 75%         | -25 pts        |
+| F1-Score  | 72.72%         | 75%         | +2.28 pts      |
+| Loss      | 0.5344         | 0.5556      | +0.0212        |
+
+
+### 📌 Interpretação
+
+- YOLO+TL → mais confiável
+
+- TL puro → mais abrangente
+
+A escolha depende do custo de erros no negócio.
+
+### 🎥 Vídeo Demonstrativo
+
+O vídeo da fase 6 deve ser colocado no YouTube como não listado e o link colado aqui:
+
+👉 Link do vídeo: Adicionar aqui
+
+### 📓 Notebook / Colab da Fase 6
+
+O notebook completo, com células executadas, código comentado e análises:
+
+- 👉 [Notebook Entregavel 1](src/Fase%206%20-%20Visao/notebooks/entregavel_1_fase6_cap1.ipynb)
+- 👉 [Notebook Entregavel 2](src/Fase%206%20-%20Visao/notebooks/Entrega2_RaphaelDaSilva_RM561452_fase6_cap1.ipynb)
+    
+
+### 🗂 Estrutura do Repositório
+```bash
+/app
+  /assets
+     /plots
+        /fase6
+           2_acuracy.png
+           2_performance.png
+           2_pos_processamento_yolo.png
+           2_amostras_dataset_treino.png
+           2_original_cropped_1.png
+           2_original_cropped_2.png
+           2_original_cropped_3.png
+           2_original_cropped_4.png
+           2_original_cropped_5.png
+           2_original_cropped_6.png
+           results_yolov5.png
+           tabela_modelos.png
+
+```
+
+## 🏁 Status
+
+- ✔ Entrega 1 concluída
+- ✔ Entrega 2 concluída
+- ✔ Dashboard integrado
+- ✔ Documentação finalizada
+
+
+---
+
 ## 🔧 Como executar o código
 
 No terminal digite os seguintes comandos

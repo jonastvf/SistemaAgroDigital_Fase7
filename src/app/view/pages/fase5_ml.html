@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Fase 5 — Resultados de Machine Learning</h2>
+
+<hr>
+
+<h3>Resumo</h3>
+<ul>
+    <li><strong>Total de linhas no dataset:</strong> {{ ml_data.summary.dataset_rows }}</li>
+    <li><strong>Melhor modelo:</strong> {{ ml_data.summary.best_model }}</li>
+</ul>
+
+<hr>
+
+<h3>Métricas por Modelo</h3>
+
+{% for model_name, model_metrics in ml_data.metrics.items() %}
+    <h4>{{ model_name }}</h4>
+    <table border="1" cellpadding="6" cellspacing="0">
+        <tr>
+            <th>Métrica</th>
+            <th>Valor</th>
+        </tr>
+
+        {% for metric_name, metric_value in model_metrics.items() %}
+            <tr>
+                <td>{{ metric_name }}</td>
+                <td>{{ metric_value | round(4) }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <br>
+{% endfor %}
+
+<hr>
+
+<h3>Gráficos</h3>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px;">
+    {% for chart_name, chart_file in ml_data.charts.items() %}
+        <div style="flex: 1 1 45%;">
+            <h4>{{ chart_name | replace('_', ' ') | title }}</h4>
+            <img src="/assets/plots/fase5/{{ chart_file }}"
+                 alt="{{ chart_name }}"
+                 style="max-width: 100%; border: 1px solid #ccc; padding: 5px;">
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

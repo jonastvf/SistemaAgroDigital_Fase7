@@ -40,7 +40,8 @@ aside {
 }
 
 header {
-    width: 100%
+    width: 100%;
+
 }
 
 header h1 {
@@ -109,6 +110,27 @@ main {
     padding: 8px 8px 8px 16px;
 }
 
+ul {
+    list-style-position: inside;
+    padding-left: 8px;
+}
+
+h3, h4 {
+    padding: 16px 0;
+}
+
+p {
+    padding: 8px 0;
+}
+
+nav ul li {
+    padding-bottom: 8px;
+}
+
+nav ul li a:hover {
+    font-weight: bold;
+}
+
 /* CUSTOMS CLASSES*/
 
 .center {
@@ -118,6 +140,7 @@ main {
 }
 
 .card {
+    max-width: 80%;
     margin: 8px 8px 24px 8px;
     padding: 12px;
     border-radius: 8px;
@@ -125,6 +148,11 @@ main {
     background-color: white;
     position: relative;
 }
+
+.chart-img {
+    width: 100%;
+}
+
 
 .form-container {
     margin-bottom: 12px;
