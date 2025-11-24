@@ -879,12 +879,6 @@ Porque falhas de detecção do YOLO impedem a classificação.
 
 A escolha depende do custo de erros no negócio.
 
-### 🎥 Vídeo Demonstrativo
-
-O vídeo da fase 6 deve ser colocado no YouTube como não listado e o link colado aqui:
-
-👉 Link do vídeo: [Youtube](https://youtu.be/xPOLT2DiYGg)
-
 ### 📓 Notebook / Colab da Fase 6
 
 O notebook completo, com células executadas, código comentado e análises:
@@ -934,18 +928,11 @@ docker-compose up --build
 O docker irá montar as imagens do sistema junto das tabelas do MySql que substituem os arrays do código.
 O sistema estará acessível pela URL: http://localhost:5000/dashboard
 
+### 🎥 Vídeo Demonstrativo
 
-## 🗃 Histórico de lançamentos
+O vídeo da fase 6 deve ser colocado no YouTube como não listado e o link colado aqui:
 
-* 0.5.0 - XX/XX/2024
-    * 
-* 0.4.0 - XX/XX/2024
-    * 
-* 0.3.0 - XX/XX/2024
-    * 
-* 0.2.0 - XX/XX/2024
-    * 
-* 0.1.0 - XX/XX/2024
+👉 Link do vídeo: [Youtube](https://youtu.be/xPOLT2DiYGg)
     *
 
 ## 📋 Licença
